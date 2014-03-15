@@ -1,0 +1,10 @@
+// comments
+
+newspaper {
+	title="teste titulo"
+	date="24 de fevereiro de 2014"
+	structure {
+		col= 3
+		show= headline1
+		}
+	}
