@@ -116,6 +116,7 @@ char* concat(int count, ...)
     int pos = 0;
 
     // Actually concatenate strings
+    // teste Joao
     va_start(ap, count);
     for(i=0 ; i<count ; i++)
     {
