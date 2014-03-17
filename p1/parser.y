@@ -6,17 +6,19 @@
 
 FILE *F;
 
+int yylex(void);
+int yyerror(const char* errmsg);
 char *concat(int count, ...);
 
 %}
  
 %union{
 	char *str;
-	int  *intval;
+	int  integer;
 }
 
 %token <str> T_STRING
-%token T_INT
+%token <integer> T_INT
 %token T_NEWSPAPER
 %token T_TITLE
 %token T_DATE
@@ -32,7 +34,8 @@ char *concat(int count, ...);
 %token T_BULLET
 %token T_ENUM
 
-%type <str> create_stmt insert_stmt col_list  values_list  select_stmt col_list_insert
+
+%type <str> newspaper_stmt
 
 %start stmt_list
 
@@ -41,66 +44,28 @@ char *concat(int count, ...);
 %%
 
 stmt_list:
-		stmt_list stmt
-	|	stmt 
+		stmt
 ;
 
 stmt:
-		create_stmt ';'	{printf("%s",$1);}
-	|	insert_stmt ';'	{printf("%s",$1);}
-	|	select_stmt ';' {printf("%s",$1);}
+		newspaper_stmt		{printf("%s",$1);}
 ;
 
 newspaper_stmt:
 		T_NEWSPAPER '{'
-			T_TITLE '=' T_STRING
-			T_DATE '=' T_STRING
+			T_TITLE '=' '"' T_STRING '"'
+			T_DATE '=' '"' T_STRING '"'
 			T_STRUCTURE '{'
 				T_COL '=' T_INT
 			'}'
 		'}'
-		{
-		
-		}
+							{
+								printf("%s\n%s\n%d", $6, $11, $17);
+                                $$ = $6;
+							}
 ;
 
-col_list:
-		T_STRING 		{ $$ = $1; }
-	| 	col_list ',' T_STRING 	{ $$ = concat(3, $1, ";", $3); }
-;
-
-
-insert_stmt:
-	   T_INSERT T_INTO T_STRING T_VALUES '(' values_list ')' { F = fopen($3, "a"); 
-								  fprintf(F, "%s\n", $6);
-								  fclose(F);
-								  $$ = concat(5, "\nINSERT INTO TABLE: ", $3, "\nVALUES: ", $6, "\n\n");
-							 	}
-;
-
-values_list:
-		T_STRING 				{ $$ = $1; }
-	| 	col_list ',' T_STRING 	{ $$ = concat(3, $1, ";", $3); }
-;
-
-
-col_list_insert: 
-		T_STRING  			{ save_col_name($1); $$ = $1; }
-	| 	col_list_insert ',' T_STRING	{ save_col_name($3); $$ = concat(3, $1, ",", $3); }
-;
-
-char* getfield(char *line, int num)
-{
-    char* tok;
-    for (tok = strtok(line, ";");
-            tok && *tok;
-            tok = strtok(NULL, ";\n"))
-    {
-        if (!--num)
-            return tok;
-    }
-   return NULL;
-}
+%%
 
 char* concat(int count, ...)
 {
@@ -129,20 +94,13 @@ char* concat(int count, ...)
     return result;
 }
 
-
 int yyerror(const char* errmsg)
 {
 	printf("\n*** Erro: %s\n", errmsg);
 }
  
-int yywrap(void) { return 1; }
- 
 int main(int argc, char** argv)
 {
-	head_list = NULL;   
-	tail_list = NULL;
 	yyparse();
-     	return 0;
+    return 0;
 }
-
-
