@@ -2,38 +2,45 @@
 #include "parser.h"
 %}
 
-ID [a-z][a-z0-9_]*
-WHITESPACE [ \n\r\t]+
+T_STRING	[a-z][a-z0-9_]*
+T_INT		[0-9]+
+WHITESPACE	[ \n\r\t]+
+COMMENT	\/\/.*\n
+INDENT	\:
+BULLET	\*
+ENUM	\#
 ANY_CHAR .
-COMMENT ["//"]+.*
-STRING ["]+[a-z0-9_ ]*["]+
-NUM [0-9]+
 
 %option case-insensitive
 
 %%
 
-{WHITESPACE} /* ignore */ ;
-"newspaper"	{return T_newspaper;}
-"title"		{return T_title;}
-"date"		{return T_date;}
-"abstract"	{return T_abstract;}
-"text"		{return T_text;}
-"source"	{return T_source;}
-"image"		{return T_image;}
-"author"	{return T_author;}
-"structure"	{return T_structure;}
-"col"		{return T_col;}
-"show"		{return T_show;}
+{WHITESPACE} /* ignore */;
+{COMMENT}  	/* ignore */;
+"newspaper"	{return T_NEWSPAPER;}
+"title" 	{return T_TITLE; }
+"date"		{return T_DATE;}
+"structure"	{return T_STRUCTURE;}
+"col"		{return T_COL;}
+"show"		{return T_SHOW;}
+"image"		{return T_IMAGE;}
+"abstract"	{return T_ABSTRACT;}
+"text"		{return T_TEXT;} 
+"author" 	{return T_AUTHOR;}
+"source"	{return T_SOURCE;}
+"="			{return '=';}
+"{"			{return '{';}
+"}"			{return '}';}
+"["			{return '[';}
+"]"			{return ']';}
+"|"			{return '|';}
+{INDENT}	{return T_INDENT;}
+{BULLET}	{return T_BULLET;}
+{ENUM}		{return T_ENUM;}
 
-"{"		{return '{';}
-"}"		{return '}';}
-
-{COMMENT} /* ignore */ ;
-
-{ID} {	
-	yylval.str = (char *) strdup(yytext);
-	return T_STRING;
+{INT} {	
+	yylval = atoi(yytext);
+	return T_INT;
 }
 
 {STRING} {	
@@ -44,7 +51,3 @@ NUM [0-9]+
 {ANY_CHAR} {
 	printf ("Caracter %c (ASCII=%d) inesperado\n", yytext[0], yytext[0]);
 }
-
-{NUM} {
-	return T_NUM;
-	}

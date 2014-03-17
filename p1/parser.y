@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+FILE *F;
+
 char *concat(int count, ...);
 
 %}
@@ -13,51 +15,93 @@ char *concat(int count, ...);
 	int  *intval;
 }
 
-%token <str> ID
-%token T_newspaper
-%token T_title
-%token T_date
-%token T_abstract
-%token T_text
-%token T_source
-%token T_image
-%token T_author
-%token T_structure 
-%token T_col
-%token T_show
 %token <str> T_STRING
-%token T_NUM
+%token T_INT
+%token T_NEWSPAPER
+%token T_TITLE
+%token T_DATE
+%token T_STRUCTURE
+%token T_COL
+%token T_SHOW
+%token T_IMAGE
+%token T_ABSTRACT
+%token T_TEXT
+%token T_AUTHOR
+%token T_SOURCE
+%token T_INDENT
+%token T_BULLET
+%token T_ENUM
 
+%type <str> create_stmt insert_stmt col_list  values_list  select_stmt col_list_insert
 
-%type <str> title date structure itemList
-
-%start newspaper
+%start stmt_list
 
 %error-verbose
-
+ 
 %%
 
-newspaper:  T_newspaper '{' title date structure itemList '}'
+stmt_list:
+		stmt_list stmt
+	|	stmt 
 ;
 
-title: T_title '=' T_STRING
+stmt:
+		create_stmt ';'	{printf("%s",$1);}
+	|	insert_stmt ';'	{printf("%s",$1);}
+	|	select_stmt ';' {printf("%s",$1);}
 ;
 
-date: T_date '=' T_STRING
-;
-
-structure: T_structure '{' T_col '=' T_NUM T_show '=' ID '}'
+newspaper_stmt:
+		T_NEWSPAPER '{'
+			T_TITLE '=' T_STRING
+			T_DATE '=' T_STRING
+			T_STRUCTURE '{'
+				T_COL '=' T_INT
+			'}'
+		'}'
+		{
 		
+		}
+;
 
-itemList:	itemList item
-	|	item
-
+col_list:
+		T_STRING 		{ $$ = $1; }
+	| 	col_list ',' T_STRING 	{ $$ = concat(3, $1, ";", $3); }
 ;
 
 
- 
-%%
- 
+insert_stmt:
+	   T_INSERT T_INTO T_STRING T_VALUES '(' values_list ')' { F = fopen($3, "a"); 
+								  fprintf(F, "%s\n", $6);
+								  fclose(F);
+								  $$ = concat(5, "\nINSERT INTO TABLE: ", $3, "\nVALUES: ", $6, "\n\n");
+							 	}
+;
+
+values_list:
+		T_STRING 				{ $$ = $1; }
+	| 	col_list ',' T_STRING 	{ $$ = concat(3, $1, ";", $3); }
+;
+
+
+col_list_insert: 
+		T_STRING  			{ save_col_name($1); $$ = $1; }
+	| 	col_list_insert ',' T_STRING	{ save_col_name($3); $$ = concat(3, $1, ",", $3); }
+;
+
+char* getfield(char *line, int num)
+{
+    char* tok;
+    for (tok = strtok(line, ";");
+            tok && *tok;
+            tok = strtok(NULL, ";\n"))
+    {
+        if (!--num)
+            return tok;
+    }
+   return NULL;
+}
+
 char* concat(int count, ...)
 {
     va_list ap;
@@ -94,8 +138,10 @@ int yywrap(void) { return 1; }
  
 int main(int argc, char** argv)
 {
-     yyparse();
-     return 0;
+	head_list = NULL;   
+	tail_list = NULL;
+	yyparse();
+     	return 0;
 }
 
 
