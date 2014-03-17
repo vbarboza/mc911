@@ -1,9 +1,10 @@
 %{
 #include "parser.h"
+#include <stdlib.h>
 %}
 
-T_STRING	[a-z][a-z0-9_]*
-T_INT		[0-9]+
+STRING		[a-z][a-z0-9_]*
+INTEGER		[0-9]+
 WHITESPACE	[ \n\r\t]+
 COMMENT	\/\/.*\n
 INDENT	\:
@@ -29,6 +30,7 @@ ANY_CHAR .
 "author" 	{return T_AUTHOR;}
 "source"	{return T_SOURCE;}
 "="			{return '=';}
+"\""		{return '"';}
 "{"			{return '{';}
 "}"			{return '}';}
 "["			{return '[';}
@@ -38,8 +40,8 @@ ANY_CHAR .
 {BULLET}	{return T_BULLET;}
 {ENUM}		{return T_ENUM;}
 
-{INT} {	
-	yylval = atoi(yytext);
+{INTEGER} {	
+	yylval.integer = atoi(yytext);
 	return T_INT;
 }
 
@@ -50,4 +52,10 @@ ANY_CHAR .
 
 {ANY_CHAR} {
 	printf ("Caracter %c (ASCII=%d) inesperado\n", yytext[0], yytext[0]);
+}
+
+%%
+
+int yywrap(void) {
+    return 1;
 }
