@@ -12,7 +12,7 @@ int yylex(void);
 int yyerror(const char* errmsg);
 char *concat(int count, ...);
 char **get_items(char *str);
-char* makenews(char *elem, int col, char *list);
+char* makenews(char *elem, char *list);
 
 %}
  
@@ -23,17 +23,17 @@ char* makenews(char *elem, int col, char *list);
 
 %token <str> T_WORD
 %token <integer> T_INT
-%token T_NEWSPAPER
-%token T_TITLE
-%token T_DATE
-%token T_STRUCTURE
-%token T_COL
-%token T_SHOW
-%token T_IMAGE
-%token T_ABSTRACT
-%token T_TEXT
-%token T_AUTHOR
-%token T_SOURCE
+%token <str>T_NEWSPAPER
+%token <str>T_TITLE
+%token <str>T_DATE
+%token <str>T_STRUCTURE
+%token <str>T_COL
+%token <str>T_SHOW
+%token <str>T_IMAGE
+%token <str>T_ABSTRACT
+%token <str>T_TEXT
+%token <str>T_AUTHOR
+%token <str>T_SOURCE
 %token T_INDENT
 %token T_BULLET
 %token T_ENUM
@@ -45,7 +45,6 @@ char* makenews(char *elem, int col, char *list);
 %start newspaper_stmt
 
 %error-verbose
-%debug
 
 %%
 
@@ -60,9 +59,9 @@ newspaper_stmt:
 			news_list
 		'}'
 							{
-								printf("%s\n%s\n%d\n", $5, $8, $13);
+								printf("%s\n%s\n", $5, $8);
 								char **itemlist = get_items($16);
-								
+								//imprime cabecalho
 								char *str = itemlist[0];
 								int pos = 1;
 								while(str) {
@@ -70,14 +69,13 @@ newspaper_stmt:
 									str = itemlist[pos];
 									pos++;
 								}
-								printf("%s\n",$16);
 								
-                                $$ = $5;
+								//imprime noticias
+								
 							}
 ;
 
-news_list:news_list news	{	char str[] = ";";
-								$$ = concat(3, $1, str, $2); }
+news_list:news_list news	{	$$ = concat(3, $1, ";", $2); }
 		| news				{	$$ = $1; }
 ;
 
@@ -87,7 +85,7 @@ news:	T_WORD '{'
 				T_COL '=' T_INT
 				T_SHOW '=' elem_list
 			'}'
-		'}'					{	$$ = makenews($3, $8, $11); }
+		'}'					{	$$ = makenews($3, $11); }
 ;
 
 elements: elements element	{	char str[] = ";";
@@ -145,12 +143,23 @@ word: T_WORD				{ 	$$ = $1; }
 	| ']'					{ 	$$ = "]"; }
 	| '|'					{ 	$$ = "|"; }
 	| ','					{ 	$$ = ","; }
+	| T_NEWSPAPER			{ 	$$ = $1;  }
+	| T_TITLE				{ 	$$ = $1;  }
+	| T_DATE				{ 	$$ = $1;  }
+	| T_STRUCTURE			{ 	$$ = $1;  }
+	| T_COL					{ 	$$ = $1;  }
+	| T_SHOW				{ 	$$ = $1;  }
+	| T_IMAGE				{ 	$$ = $1;  }
+	| T_ABSTRACT			{ 	$$ = $1;  }
+	| T_TEXT				{ 	$$ = $1;  }
+	| T_AUTHOR				{ 	$$ = $1;  }
+	| T_SOURCE				{ 	$$ = $1;  }
 ;
 
 
 %%
 
-char* makenews(char *elem, int col, char *list) {
+char* makenews(char *elem, char *list) {
 	return "teste: noticia!";
 }
 
