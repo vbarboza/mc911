@@ -3,6 +3,6 @@ newspaper {
 	date= "24 de fevereiro de 2014"
 	structure {
 		col= 3
-		show = headline1, headline2
+		show = headline1, headline2, head3, teste4
 	}
 }

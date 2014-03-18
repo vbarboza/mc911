@@ -61,12 +61,13 @@ newspaper_stmt:
 			'}'
 		'}'
 							{
-								printf("%s\n%s\n%d\n", $5, $8, $13);
+								printf("%s\n%s\n%d\n%s\n", $5, $8, $13, $16);
                                 $$ = $5;
 							}
 ;
 
-item_list: item_list ',' T_WORD	{$$ = concat(2, $1, $3); }
+item_list: item_list ',' T_WORD	{	char str[] = ";";
+									$$ = concat(3, $1,str, $3); }
 		| T_WORD				{$$ = $1; }
 ;
 
