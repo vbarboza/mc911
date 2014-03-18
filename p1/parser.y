@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+
 #define MAX_NEWS 10
 
 FILE *F;
@@ -75,7 +76,7 @@ newspaper_stmt:
 							}
 ;
 
-news_list: news_list news	{	char str[] = ";";
+news_list:news_list news	{	char str[] = ";";
 								$$ = concat(3, $1, str, $2); }
 		| news				{	$$ = $1; }
 ;
@@ -86,12 +87,12 @@ news:	T_WORD '{'
 				T_COL '=' T_INT
 				T_SHOW '=' elem_list
 			'}'
-		'}'					{ $$ = makenews($3, $8, $11); }
+		'}'					{	$$ = makenews($3, $8, $11); }
 ;
 
 elements: elements element	{	char str[] = ";";
 								$$ = concat(3, $1, str, $2); }
-		| element			{$$ = $1; }
+		| element			{	$$ = $1; }
 ;
 
 element:  T_ABSTRACT '=' string { $$ = concat(2, "ABSTRACT:", $3); }
@@ -103,38 +104,38 @@ element:  T_ABSTRACT '=' string { $$ = concat(2, "ABSTRACT:", $3); }
 		| T_TITLE '=' string 	{ $$ = concat(2, "TITLE:", $3); }
 ;
 
-elem_list: elem_list ',' elem	{	$$ = concat(3,$1,";",$3); }
-		| elem				{   $$ = $1; }
+elem_list:elem_list ',' elem	{ $$ = concat(3,$1,";",$3); }
+		| elem					{ $$ = $1; }
 ;
 		
-elem: T_ABSTRACT { $$ = "ABSTRACT"; }
-		| T_AUTHOR { $$ = "AUTHOR"; }
-		| T_DATE { $$ = "DATE"; }
-		| T_IMAGE { $$ = "IMAGE"; }
-		| T_SOURCE { $$ = "SOURCE"; }
-		| T_TEXT { $$ = "TEXT"; }
-		| T_TITLE { $$ = "TITLE"; }
+elem: 	  T_ABSTRACT 			{ $$ = "ABSTRACT"; }
+		| T_AUTHOR 				{ $$ = "AUTHOR"; }
+		| T_DATE 				{ $$ = "DATE"; }
+		| T_IMAGE 				{ $$ = "IMAGE"; }
+		| T_SOURCE 				{ $$ = "SOURCE"; }
+		| T_TEXT 				{ $$ = "TEXT"; }
+		| T_TITLE 				{ $$ = "TITLE"; }
 ;
 
-item_list: item_list ',' T_WORD	{	char str[] = ";";
-									$$ = concat(3, $1,str, $3); }
-		| T_WORD				{$$ = $1; }
+item_list: item_list ',' T_WORD	{ char str[] = ";";
+								  $$ = concat(3, $1,str, $3); }
+		| T_WORD				{ $$ = $1; }
 ;
 
 string: '"' word_list '"' { $$ = $2; }
 ;
 
 word_list: word_list word { char str[] = " ";
-								 $$ = concat(3,$1,str,$2); }
+							$$ = concat(3,$1,str,$2); }
 	| word				  { $$ = $1; }
 ;
 
-word: T_WORD				{   $$ = $1; }
-	| T_INT					{   char str[5];
+word: T_WORD				{ 	$$ = $1; }
+	| T_INT					{ 	char str[5];
 								str[0] = '\0';
 								sprintf(str,"%d", $1);
 								$$ = str;
-								}
+							}
 	| T_PUNCTUATION			{	$$ = $1; }
 	| '='					{ 	$$ = "="; }
 	| '"'					{ 	$$ = "\""; }
@@ -151,7 +152,7 @@ word: T_WORD				{   $$ = $1; }
 
 char* makenews(char *elem, int col, char *list) {
 	return "teste: noticia!";
-	}
+}
 
 char **get_items(char *str) {
 	char **list = (char **)malloc(MAX_NEWS*sizeof(char *));
