@@ -17,7 +17,6 @@ char *concat(int count, ...);
 	int  integer;
 }
 
-%token <str> T_STRING
 %token <integer> T_INT
 %token T_NEWSPAPER
 %token T_TITLE

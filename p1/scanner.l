@@ -3,7 +3,7 @@
 #include <stdlib.h>
 %}
 
-STRING		[a-z][a-z0-9_]*
+WORD		[a-z][a-z0-9_]*
 INTEGER		[0-9]+
 WHITESPACE	[ \n\r\t]+
 COMMENT	\/\/.*\n
@@ -45,9 +45,9 @@ ANY_CHAR .
 	return T_INT;
 }
 
-{STRING} {	
+{WORD} {	
 	yylval.str = (char *) strdup(yytext);
-	return T_STRING;
+	return T_WORD;
 }
 
 {ANY_CHAR} {
