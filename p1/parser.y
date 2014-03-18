@@ -35,7 +35,7 @@ char *concat(int count, ...);
 %token T_ENUM
 
 
-%type <str> newspaper_stmt string word_list word
+%type <str> newspaper_stmt string word_list word item_list
 
 %start stmt_list
 
@@ -57,12 +57,17 @@ newspaper_stmt:
 			T_DATE '=' string
 			T_STRUCTURE '{'
 				T_COL '=' T_INT
+				T_SHOW '=' item_list
 			'}'
 		'}'
 							{
 								printf("%s\n%s\n%d\n", $5, $8, $13);
                                 $$ = $5;
 							}
+;
+
+item_list: item_list ',' T_WORD	{$$ = concat(2, $1, $3); }
+		| T_WORD				{$$ = $1; }
 ;
 
 string: '"' word_list '"' { $$ = $2; }

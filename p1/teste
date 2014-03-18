@@ -1,7 +1,8 @@
 newspaper {
-	title= " teste titulo oaoooopa"
-	date= " 24 de fevereiro de 2014 "
+	title= "teste titulo oaoooopa"
+	date= "24 de fevereiro de 2014"
 	structure {
 		col= 3
+		show = headline1, headline2
 	}
 }

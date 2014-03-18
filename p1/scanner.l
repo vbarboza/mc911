@@ -36,6 +36,7 @@ ANY_CHAR .
 "["			{return '[';}
 "]"			{return ']';}
 "|"			{return '|';}
+","			{return ',';}
 {INDENT}	{return T_INDENT;}
 {BULLET}	{return T_BULLET;}
 {ENUM}		{return T_ENUM;}
