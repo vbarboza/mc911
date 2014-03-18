@@ -3,13 +3,13 @@
 #include <stdlib.h>
 %}
 
-WORD		[a-z][a-z0-9_]*
+WORD		[a-z][a-zA-Z0-9\x80-\xf3]*
 INTEGER		[0-9]+
 WHITESPACE	[ \n\r\t]+
 COMMENT	\n\/\/.*\n
 INDENT	\n[\:]+
-BULLET	\*
-ENUM	\#
+BULLET	\n[\*]+
+ENUM	\n[\#]+
 ANY_CHAR .
 PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]
 
