@@ -11,8 +11,8 @@ newspaper {
 		date = "3 do 2 do 4"
 		text = "blablablablabla"
 		structure {
-			col = 1
-			show = title, date, text
+			col= 1
+			show= title, date, text
 		}
 	}
 }

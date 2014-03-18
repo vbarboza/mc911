@@ -20,6 +20,9 @@ char* makenews(char *elem, int col, char *list);
 	int  integer;
 }
 
+%debug
+
+
 %token <str> T_WORD
 %token <integer> T_INT
 %token T_NEWSPAPER
@@ -37,13 +40,12 @@ char* makenews(char *elem, int col, char *list);
 %token T_BULLET
 %token T_ENUM
 
-
-%type <str> newspaper_stmt string word_list word item_list news_list news elements element
+%type <str> newspaper_stmt string word_list word item_list news_list news elements element elem_list elem
 
 %start newspaper_stmt
 
 %error-verbose
- 
+
 %%
 
 newspaper_stmt:
@@ -81,7 +83,7 @@ news:	T_WORD '{'
 			elements
 			T_STRUCTURE '{' 
 				T_COL '=' T_INT
-				T_SHOW '='item_list
+				T_SHOW '=' elem_list
 			'}'
 		'}'					{ $$ = makenews($3, $8, $11); }
 ;
@@ -91,15 +93,27 @@ elements: elements element	{	char str[] = ";";
 		| element			{$$ = $1; }
 ;
 
-element: T_TITLE '=' string 	{ $$ = concat(2, "TITLE:", $3); }
-		| T_ABSTRACT '=' string { $$ = concat(2, "ABSTRACT:", $3); }
+element:  T_ABSTRACT '=' string { $$ = concat(2, "ABSTRACT:", $3); }
 		| T_AUTHOR '=' string	{ $$ = concat(2, "AUTHOR:", $3); }
 		| T_DATE '=' string		{ $$ = concat(2, "DATE:", $3); }
 		| T_IMAGE '=' string	{ $$ = concat(2, "IMAGE:", $3); }
 		| T_SOURCE '=' string	{ $$ = concat(2, "SOURCE:", $3); }
 		| T_TEXT '='string		{ $$ = concat(2, "TEXT:", $3); }
+		| T_TITLE '=' string 	{ $$ = concat(2, "TITLE:", $3); }
 ;
 
+elem_list: elem_list ',' elem	{	$$ = concat(3,$1,";",$3); }
+		| elem				{   $$ = $1; }
+;
+		
+elem: T_ABSTRACT { $$ = "ABSTRACT"; }
+		| T_AUTHOR { $$ = "AUTHOR"; }
+		| T_DATE { $$ = "DATE"; }
+		| T_IMAGE { $$ = "IMAGE"; }
+		| T_SOURCE { $$ = "SOURCE"; }
+		| T_TEXT { $$ = "TEXT"; }
+		| T_TITLE { $$ = "TITLE"; }
+;
 
 item_list: item_list ',' T_WORD	{	char str[] = ";";
 									$$ = concat(3, $1,str, $3); }

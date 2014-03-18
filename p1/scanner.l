@@ -13,6 +13,7 @@ ENUM	\#
 ANY_CHAR .
 
 %option case-insensitive
+%option debug
 
 %%
 
