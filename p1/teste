@@ -5,4 +5,14 @@ newspaper {
 		col= 3
 		show = headline1, headline2, head3, teste4
 	}
+	
+	headline1 {
+		title= "teste news 1"
+		date = "3 do 2 do 4"
+		text = "blablablablabla"
+		structure {
+			col = 1
+			show = title, date, text
+		}
+	}
 }

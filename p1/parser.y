@@ -11,7 +11,7 @@ int yylex(void);
 int yyerror(const char* errmsg);
 char *concat(int count, ...);
 char **get_items(char *str);
-char* makenews(char *elem; char *structure);
+char* makenews(char *elem, int col, char *list);
 
 %}
  
@@ -38,7 +38,7 @@ char* makenews(char *elem; char *structure);
 %token T_ENUM
 
 
-%type <str> newspaper_stmt string word_list word item_list news_list news elements structure
+%type <str> newspaper_stmt string word_list word item_list news_list news elements element
 
 %start newspaper_stmt
 
@@ -79,9 +79,26 @@ news_list: news_list news	{	char str[] = ";";
 
 news:	T_WORD '{'
 			elements
-			structure '}'	{ $$ = makenews($3, $4); }
+			T_STRUCTURE '{' 
+				T_COL '=' T_INT
+				T_SHOW '='item_list
+			'}'
+		'}'					{ $$ = makenews($3, $8, $11); }
 ;
-			
+
+elements: elements element	{	char str[] = ";";
+								$$ = concat(3, $1, str, $2); }
+		| element			{$$ = $1; }
+;
+
+element: T_TITLE '=' string 	{ $$ = concat(2, "TITLE:", $3); }
+		| T_ABSTRACT '=' string { $$ = concat(2, "ABSTRACT:", $3); }
+		| T_AUTHOR '=' string	{ $$ = concat(2, "AUTHOR:", $3); }
+		| T_DATE '=' string		{ $$ = concat(2, "DATE:", $3); }
+		| T_IMAGE '=' string	{ $$ = concat(2, "IMAGE:", $3); }
+		| T_SOURCE '=' string	{ $$ = concat(2, "SOURCE:", $3); }
+		| T_TEXT '='string		{ $$ = concat(2, "TEXT:", $3); }
+;
 
 
 item_list: item_list ',' T_WORD	{	char str[] = ";";
@@ -108,8 +125,8 @@ word: T_WORD				{   $$ = $1; }
 
 %%
 
-char* makenews(char *elem; char *structure) {
-	return "teste: noticia!"
+char* makenews(char *elem, int col, char *list) {
+	return "teste: noticia!";
 	}
 
 char **get_items(char *str) {
@@ -157,6 +174,7 @@ char* concat(int count, ...)
 int yyerror(const char* errmsg)
 {
 	printf("\n*** Erro: %s\n", errmsg);
+	return 0;
 }
  
 int main(int argc, char** argv)
