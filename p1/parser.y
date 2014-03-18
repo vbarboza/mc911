@@ -12,7 +12,7 @@ int yylex(void);
 int yyerror(const char* errmsg);
 char *concat(int count, ...);
 char **get_items(char *str);
-char* makenews(char *elem, int col, char *list);
+char* makenews(char *elem, char *list);
 char* html_begin();
 char* meta(char *title);
 char* header(char *title, char *date);
@@ -218,7 +218,7 @@ char* html_end() {
 					"</html>\n";
 }
 
-char* makenews(char *elem, int col, char *list) {
+char* makenews(char *elem, char *list) {
 	return "teste: noticia!";
 }
 
