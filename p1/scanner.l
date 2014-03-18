@@ -6,32 +6,32 @@
 WORD		[a-z][a-zA-Z0-9\x80-\xf3]*
 INTEGER		[0-9]+
 WHITESPACE	[ \n\r\t]+
-COMMENT	\n\/\/.*\n
+COMMENT	\/\/.*\n
 INDENT	\n[\:]+
 BULLET	\n[\*]+
 ENUM	\n[\#]+
 ANY_CHAR .
-PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]
+PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 
 %option case-insensitive
-%option debug
 
 %%
 
 {WHITESPACE} /* ignore */
 {COMMENT}  	/* ignore */;
-"newspaper"	{return T_NEWSPAPER;}
-"title" 	{return T_TITLE; }
-"date"		{return T_DATE;}
-"structure"	{return T_STRUCTURE;}
-"col"		{return T_COL;}
-"show"		{return T_SHOW;}
-"image"		{return T_IMAGE;}
-"abstract"	{return T_ABSTRACT;}
-"text"		{return T_TEXT;} 
-"author" 	{return T_AUTHOR;}
-"source"	{return T_SOURCE;}
+"newspaper"	{yylval.str = (char *) strdup(yytext); return T_NEWSPAPER;}
+"title" 	{yylval.str = (char *) strdup(yytext); return T_TITLE;}
+"date"		{yylval.str = (char *) strdup(yytext); return T_DATE;}
+"structure"	{yylval.str = (char *) strdup(yytext); return T_STRUCTURE;}
+"col"		{yylval.str = (char *) strdup(yytext); return T_COL;}
+"show"		{yylval.str = (char *) strdup(yytext); return T_SHOW;}
+"image"		{yylval.str = (char *) strdup(yytext); return T_IMAGE;}
+"abstract"	{yylval.str = (char *) strdup(yytext); return T_ABSTRACT;}
+"text"		{yylval.str = (char *) strdup(yytext); return T_TEXT;} 
+"author" 	{yylval.str = (char *) strdup(yytext); return T_AUTHOR;}
+"source"	{yylval.str = (char *) strdup(yytext); return T_SOURCE;}
 "="			{return '=';}
+"\\\""		{return '"';} 
 "\""		{return '"';}
 "{"			{return '{';}
 "}"			{return '}';}
