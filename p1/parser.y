@@ -17,6 +17,7 @@ char *concat(int count, ...);
 	int  integer;
 }
 
+%token <str> T_WORD
 %token <integer> T_INT
 %token T_NEWSPAPER
 %token T_TITLE
@@ -34,7 +35,7 @@ char *concat(int count, ...);
 %token T_ENUM
 
 
-%type <str> newspaper_stmt
+%type <str> newspaper_stmt string word_list
 
 %start stmt_list
 
@@ -52,17 +53,30 @@ stmt:
 
 newspaper_stmt:
 		T_NEWSPAPER '{'
-			T_TITLE '=' '"' T_STRING '"'
-			T_DATE '=' '"' T_STRING '"'
+			T_TITLE '=' string
+			T_DATE '=' string
 			T_STRUCTURE '{'
 				T_COL '=' T_INT
 			'}'
 		'}'
 							{
-								printf("%s\n%s\n%d", $6, $11, $17);
-                                $$ = $6;
+								printf("%s\n%s\n%d\n", $5, $8, $13);
+                                $$ = $5;
 							}
 ;
+
+string: '"' word_list '"' { $$ = $2; }
+;
+
+word_list: word_list word_list {$$ = concat(2,$1,$2); }
+	| T_WORD				{ $$ = $1; }
+	| T_INT					{   char str[5];
+								sprintf(str,"%d", $1);
+								$$ = str;
+								}
+	|						{$$ = '\0';}
+;
+
 
 %%
 
