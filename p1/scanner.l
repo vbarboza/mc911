@@ -13,6 +13,7 @@ ENUM	\n[\#]+
 ANY_CHAR .
 PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 
+
 %option case-insensitive
 
 %%
@@ -42,6 +43,8 @@ PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 {INDENT}	{return T_INDENT;}
 {BULLET}	{return T_BULLET;}
 {ENUM}		{return T_ENUM;}
+"'''"		{yylval.str = "<b>"; return T_WORD; }
+"''"		{yylval.str = "<i>"; return T_WORD; }
 
 {PUNCTUATION}	{
 	yylval.str = (char *) strdup(yytext);
