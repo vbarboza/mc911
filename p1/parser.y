@@ -12,8 +12,11 @@ int yylex(void);
 int yyerror(const char* errmsg);
 char *concat(int count, ...);
 char **get_items(char *str);
-char* makenews(char *elem, char *list);
-
+char* makenews(char *elem, int col, char *list);
+char* html_begin();
+char* meta(char *title);
+char* header(char *title, char *date);
+char* html_end();
 %}
  
 %union{
@@ -59,7 +62,10 @@ newspaper_stmt:
 			news_list
 		'}'
 							{
-								printf("%s\n%s\n", $5, $8);
+								F = fopen("newspaper.html","w");
+
+								printf("%s\n%s\n%d\n", $5, $8, $13);
+
 								char **itemlist = get_items($16);
 								//imprime cabecalho
 								char *str = itemlist[0];
@@ -70,8 +76,15 @@ newspaper_stmt:
 									pos++;
 								}
 								
-								//imprime noticias
-								
+                                fprintf(F, "%s", concat(4,
+                                						html_begin(),
+                                						meta($5),
+                                						header($5, $8),
+                                						html_end())
+                                		);
+
+                                fclose(F);
+
 							}
 ;
 
@@ -159,7 +172,53 @@ word: T_WORD				{ 	$$ = $1; }
 
 %%
 
-char* makenews(char *elem, char *list) {
+char* html_head(char *title) {
+	char *before =	"<!DOCTYPE html>"
+					"<html lang=\"en\">"
+  					"<head>"
+    				"<meta charset=\"utf-8\">"
+    				"<title>";
+	char *after = 	"</title>"
+    				"<link href=\"bootstrap.css\" rel=\"stylesheet\">"
+  					"</head>";
+  	return concat(3, before, title, after);
+}
+
+char* html_begin() {
+	return			"<!DOCTYPE html>\n"
+					"<html lang=\"pt-br\">\n";
+}
+
+char* meta(char *title) {
+  	char *before =	"<head>\n"
+    				"<meta charset=\"utf-8\">\n"
+    				"<title>\n";
+	char *after = 	"</title>\n"
+    				"<link href=\"bootstrap.css\" rel=\"stylesheet\">\n"
+  					"</head>\n";
+  	return concat(3, before, title, after);
+}
+
+char* header(char *title, char *date) {
+  	char *bef_title =	"<body>\n"
+    					"<div class=\"container\">\n"
+      					"<h1 class=\"text-center\">";
+
+    char *bef_date =	"</h1>\n"
+    					"<h4 class=\"text-center\">";
+
+    char *after_date = 	"</h4>\n";
+
+    return concat(5, bef_title, title, bef_date, date, after_date);
+}
+
+char* html_end() {
+	return			"</div>\n"
+					"</body>\n"
+					"</html>\n";
+}
+
+char* makenews(char *elem, int col, char *list) {
 	return "teste: noticia!";
 }
 
