@@ -6,11 +6,12 @@
 WORD		[a-z][a-z0-9_]*
 INTEGER		[0-9]+
 WHITESPACE	[ \n\r\t]+
-COMMENT	\/\/.*\n
-INDENT	\:
+COMMENT	\n\/\/.*\n
+INDENT	\n[\:]+
 BULLET	\*
 ENUM	\#
 ANY_CHAR .
+PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]
 
 %option case-insensitive
 %option debug
@@ -41,6 +42,11 @@ ANY_CHAR .
 {INDENT}	{return T_INDENT;}
 {BULLET}	{return T_BULLET;}
 {ENUM}		{return T_ENUM;}
+
+{PUNCTUATION}	{
+	yylval.str = (char *) strdup(yytext);
+	return T_PUNCTUATION;
+}
 
 {INTEGER} {	
 	yylval.integer = atoi(yytext);

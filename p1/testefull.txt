@@ -1,0 +1,47 @@
+newspaper{ 
+	title= "SEMPRE ONLINE. O jornal em tempo real" 
+	date= "24 de Fevereiro de 2014"
+
+	structure {
+		col= 3  
+		show= headline1, Editorial2, headline2, noticia3, Editorial1
+	}
+
+	headline1{
+			title= "Virada Cultural Paulista tem progr"
+
+			image= "./virada.jpg"
+
+			abstract= "A Virada Cultural Paulista, que se iniciou ontem em 20 cidades do Estado, prossegue neste domingo"
+
+		    	text= "A [http://viradacultural.org | Virada Cultural Paulista], que se iniciou ontem em 20 cidades do Estado,"
+			author= "Fulano de Tal"
+			source= "Central de Informacoes da Virada Cultural"
+
+			structure {
+				col= 2
+				show= title, image, abstract
+			}
+		}	
+
+		headline2{
+			title= "Deputado Roberto Jefferson e levado para presidio em Niteroi, no RJ"
+			abstract= "O ex-deputado  Roberto Jefferson, delator do esquema do mensalÃ£o, foi levado pouco antes das 20h desta segunda-feira (24) do Complexo de GericinÃ³, em Bangu, Zona Oeste do Rio, para um"
+			
+			text="O ex-deputado  Roberto Jefferson, delator do esquema do mensalÃ£o, foi levado pouco antes das 20h"
+						
+			author= "Beltrano"
+
+			date="06/06/2012"
+
+			source= "FolhaOnLine.com"
+
+			structure {
+				col= 1
+				show= title, abstract, source
+			}
+	
+		}	
+}
+
+

@@ -20,9 +20,6 @@ char* makenews(char *elem, int col, char *list);
 	int  integer;
 }
 
-%debug
-
-
 %token <str> T_WORD
 %token <integer> T_INT
 %token T_NEWSPAPER
@@ -40,11 +37,14 @@ char* makenews(char *elem, int col, char *list);
 %token T_BULLET
 %token T_ENUM
 
+%token <str> T_PUNCTUATION
+
 %type <str> newspaper_stmt string word_list word item_list news_list news elements element elem_list elem
 
 %start newspaper_stmt
 
 %error-verbose
+%debug
 
 %%
 
@@ -69,6 +69,7 @@ newspaper_stmt:
 									str = itemlist[pos];
 									pos++;
 								}
+								printf("%s\n",$16);
 								
                                 $$ = $5;
 							}
@@ -134,6 +135,15 @@ word: T_WORD				{   $$ = $1; }
 								sprintf(str,"%d", $1);
 								$$ = str;
 								}
+	| T_PUNCTUATION			{	$$ = $1; }
+	| '='					{ 	$$ = "="; }
+	| '"'					{ 	$$ = "\""; }
+	| '{'					{ 	$$ = "{"; }
+	| '}'					{ 	$$ = "}"; }
+	| '['					{ 	$$ = "["; }
+	| ']'					{ 	$$ = "]"; }
+	| '|'					{ 	$$ = "|"; }
+	| ','					{ 	$$ = ","; }
 ;
 
 
