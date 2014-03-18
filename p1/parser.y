@@ -37,19 +37,11 @@ char *concat(int count, ...);
 
 %type <str> newspaper_stmt string word_list word item_list
 
-%start stmt_list
+%start newspaper_stmt
 
 %error-verbose
  
 %%
-
-stmt_list:
-		stmt
-;
-
-stmt:
-		newspaper_stmt		{}
-;
 
 newspaper_stmt:
 		T_NEWSPAPER '{'
