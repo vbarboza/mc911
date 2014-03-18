@@ -35,7 +35,7 @@ char *concat(int count, ...);
 %token T_ENUM
 
 
-%type <str> newspaper_stmt string word_list
+%type <str> newspaper_stmt string word_list word
 
 %start stmt_list
 
@@ -48,7 +48,7 @@ stmt_list:
 ;
 
 stmt:
-		newspaper_stmt		{printf("%s",$1);}
+		newspaper_stmt		{}
 ;
 
 newspaper_stmt:
@@ -68,13 +68,17 @@ newspaper_stmt:
 string: '"' word_list '"' { $$ = $2; }
 ;
 
-word_list: word_list word_list {$$ = concat(2,$1,$2); }
-	| T_WORD				{ $$ = $1; }
+word_list: word_list word { char str[] = " ";
+								 $$ = concat(3,$1,str,$2); }
+	| word				  { $$ = $1; }
+;
+
+word: T_WORD				{   $$ = $1; }
 	| T_INT					{   char str[5];
+								str[0] = '\0';
 								sprintf(str,"%d", $1);
 								$$ = str;
 								}
-	|						{$$ = '\0';}
 ;
 
 

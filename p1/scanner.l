@@ -16,7 +16,7 @@ ANY_CHAR .
 
 %%
 
-{WHITESPACE} /* ignore */;
+{WHITESPACE} /* ignore */
 {COMMENT}  	/* ignore */;
 "newspaper"	{return T_NEWSPAPER;}
 "title" 	{return T_TITLE; }
