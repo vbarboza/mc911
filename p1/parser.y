@@ -3,12 +3,15 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+#define MAX_NEWS 10
 
 FILE *F;
 
 int yylex(void);
 int yyerror(const char* errmsg);
 char *concat(int count, ...);
+char **get_items(char *str);
+char* makenews(char *elem; char *structure);
 
 %}
  
@@ -35,7 +38,7 @@ char *concat(int count, ...);
 %token T_ENUM
 
 
-%type <str> newspaper_stmt string word_list word item_list
+%type <str> newspaper_stmt string word_list word item_list news_list news elements structure
 
 %start newspaper_stmt
 
@@ -51,12 +54,35 @@ newspaper_stmt:
 				T_COL '=' T_INT
 				T_SHOW '=' item_list
 			'}'
+			news_list
 		'}'
 							{
-								printf("%s\n%s\n%d\n%s\n", $5, $8, $13, $16);
+								printf("%s\n%s\n%d\n", $5, $8, $13);
+								char **itemlist = get_items($16);
+								
+								char *str = itemlist[0];
+								int pos = 1;
+								while(str) {
+									printf("%s\n",str);
+									str = itemlist[pos];
+									pos++;
+								}
+								
                                 $$ = $5;
 							}
 ;
+
+news_list: news_list news	{	char str[] = ";";
+								$$ = concat(3, $1, str, $2); }
+		| news				{	$$ = $1; }
+;
+
+news:	T_WORD '{'
+			elements
+			structure '}'	{ $$ = makenews($3, $4); }
+;
+			
+
 
 item_list: item_list ',' T_WORD	{	char str[] = ";";
 									$$ = concat(3, $1,str, $3); }
@@ -81,6 +107,26 @@ word: T_WORD				{   $$ = $1; }
 
 
 %%
+
+char* makenews(char *elem; char *structure) {
+	return "teste: noticia!"
+	}
+
+char **get_items(char *str) {
+	char **list = (char **)malloc(MAX_NEWS*sizeof(char *));
+	
+	char *pch = strtok(str,";");
+	list[0] = pch;
+	
+	int pos = 1;
+
+	while(pch) {
+		pch = strtok(NULL,";");
+		list[pos]=pch;
+		pos++;
+	}
+	return list;	
+}
 
 char* concat(int count, ...)
 {
