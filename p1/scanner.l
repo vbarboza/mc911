@@ -40,7 +40,13 @@ PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 "]"			{return ']';}
 "|"			{return '|';}
 ","			{return ',';}
-{INDENT}	{return T_INDENT;}
+{INDENT}	{	int i = strlen(yytext)-1;
+				char *str = (char *)malloc((i*6*5+1)*sizeof(char));
+				int count=0;
+				for(count=0;count<i;count++)
+					sprintf(&str[5*count],"&nbsp");
+				yylval.str = str;
+				return T_WORD;}
 {BULLET}	{return T_BULLET;}
 {ENUM}		{return T_ENUM;}
 "'''"		{yylval.str = "<b>"; return T_WORD; }
