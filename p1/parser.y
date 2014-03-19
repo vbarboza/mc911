@@ -29,7 +29,6 @@ int yylex(void);
 int yyerror(const char* errmsg);
 char *concat(int count, ...);
 char **get_items(char *str);
-char* makenews(char *elem, char *list);
 char* html_begin();
 char* meta(char *title);
 char* header(char *title, char *date);
@@ -262,9 +261,6 @@ word: T_WORD				{ 	$$ = $1; }
 
 
 %%
-char* makenews(char *elem, char *list) {
-	return "teste: noticia!";
-}
 
 char **get_items(char *str) {
 	char **list = (char **)malloc(MAX_NEWS*sizeof(char *));
