@@ -4,3 +4,4 @@
 *.o
 *.h
 parser
+*.html
