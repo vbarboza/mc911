@@ -12,9 +12,11 @@ BULLET	\n[\*]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
 ENUM	\n[\#]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
 ANY_CHAR .
 PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
+URL		[a-zA-Z0-9:/.]+
 
 
 %option case-insensitive
+%option debug
 
 %%
 
@@ -61,6 +63,12 @@ PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 	yylval.integer = atoi(yytext);
 	return T_INT;
 }
+
+{URL} {
+	yylval.str = (char *) strdup(yytext);
+	return T_WORD;
+}
+
 
 {WORD} {	
 	yylval.str = (char *) strdup(yytext);
