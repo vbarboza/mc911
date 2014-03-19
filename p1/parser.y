@@ -203,7 +203,7 @@ word: T_WORD				{ 	$$ = $1; }
 								}
 	| '[' '[' T_WORD '|' word_list ']' ']' {
 								$$ = concat(5,
-											"<br><img src=\"", $3,
+											"<br><img  style=\"float:left; padding: 8px;\" src=\"", $3,
 											"\" alt=\"", $5, "\"><br>");
 								}
 	| '|'					{ 	$$ = "|"; }
@@ -383,7 +383,7 @@ char* news_begin(char *title) {
  
  char* winbody(char *txt) {
  	
- 	char *buffer = "<div class=\"row\"> <div class=\"span12\">\n<p>";
+   char *buffer = "<div class=\"row\"> <div class=\"span12\">\n<p style=\"text-align:justify;\">";
  	buffer = concat(3, buffer, txt, "</p></div>\n");
  	return buffer;
  }
@@ -396,10 +396,9 @@ char* news_title(char *title) {
 	char *title2 = strdup(title);
 	
 	char *link1 = "<h3><a href onclick=\"window.open(&#39;";
-	char *link2 = "&#39;,&#39;headline1&#39;,&#39;width=720,height=500,scrollbars=yes,screenX=400,screenY=200&#39;)\">";
+	char *link2 = "&#39;,&#39;headline1&#39;,&#39;width=960,height=500,scrollbars=yes,screenX=400,screenY=200&#39;)\">";
 	
 	if(news.show[NEWS_TEXT]) {
-		printf("TESTE TESTE TESTEEEAPSODIFJASPODFJAOSFJASOPFJOASDFJOPASFD\n\n\n\n\n");
 		char *name = concat(2,strtok(title," "),".html");
 		newFILE = fopen(name,"w");
 		filebuff = concat(6, html_begin(),meta(title2),header(title2, ""),
@@ -423,7 +422,7 @@ int count_elem() {
 }
 
 char* add_abstract(char *buff) {
-	return concat(4, buff,	"<p>",
+	return concat(4, buff,	"<p style=\"text-align:justify;\">",
 						news.element[NEWS_ABS],
 						"</p>\n");
 }
@@ -441,7 +440,7 @@ char* add_date(char *buff) {
 }
 
 char* add_image(char *buff) {
-	return concat(4, buff, "<img height=\"150\" src=\"",
+  return concat(4, buff, "<img style=\"float:left; padding: 8px; \" height=\"150\" src=\"",
 							news.element[NEWS_IMAGE],
 							"\">");
 }
@@ -471,7 +470,7 @@ char* news_paragraph(char *paragraph) {
 }
 
 char* news_image(char *image) {	
-	return concat(3,	"<img src=\"",
+	return concat(3,	"<img  style=\"float:left; padding: 8px;\" src=\"",
 						image,
 						"\" />\n");
 }

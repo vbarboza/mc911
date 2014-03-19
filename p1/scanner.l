@@ -18,7 +18,10 @@ ANY_CHAR .
 URL		[./:]*[a-zA-Z0-9][a-zA-Z0-9:/.]+
 PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 INTITLE		===[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*===
-INDENT	[:]+[a-zA-Z0-9\x80-\xf3]+
+BOLD		'''[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*'''
+EMPH		''[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*''
+WHATEVER	'''''[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*'''''
+INDENT	[:]+[a-zA-Z0-9\x80-\xf3 \t]+
 
 
 %option case-insensitive
@@ -71,8 +74,23 @@ INDENT	[:]+[a-zA-Z0-9\x80-\xf3]+
 {BULLET}	{yylval.str = (char *) strdup(yytext); return T_BULLET;}
 {ENUM}		{yylval.str = (char *) strdup(yytext); return T_ENUM;}
 
-"'''"		{yylval.str = "<b>"; return T_WORD; }
-"''"		{yylval.str = "<i>"; return T_WORD; }
+{BOLD} 		{ char *buff = (char *) strdup(yytext);
+				buff = &buff[3];
+				int len = strlen(buff);
+				buff[len-3] = '\0';
+				yylval.str = concat2(3,"<b>",buff,"</b>"); return T_WORD; }
+{EMPH} 		{ char *buff = (char *) strdup(yytext);
+				buff = &buff[3];
+				int len = strlen(buff);
+				buff[len-3] = '\0';
+				yylval.str = concat2(3,"<i>",buff,"</i>"); return T_WORD; }
+
+{WHATEVER}	{ char *buff = (char *) strdup(yytext);
+				buff = &buff[3];
+				int len = strlen(buff);
+				buff[len-3] = '\0';
+				yylval.str = concat2(3,"<i><b>",buff,"</b></i>"); return T_WORD; }
+
 "="			{return '=';}
 
 
