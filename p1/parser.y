@@ -6,6 +6,22 @@
 
 #define MAX_NEWS 10
 
+#define NEWS_TITLE	0
+#define NEWS_ABS 	1
+#define NEWS_AUTHOR 2
+#define NEWS_DATE 	3
+#define NEWS_IMAGE 	4
+#define NEWS_SOURCE 5
+#define NEWS_TEXT 	6
+
+static int col = 3;
+
+static struct {
+	char 	*element[7];
+	int		show[7];
+	int 	col;
+} news;
+
 FILE *F;
 
 int yylex(void);
@@ -16,6 +32,7 @@ char* makenews(char *elem, char *list);
 char* html_begin();
 char* meta(char *title);
 char* header(char *title, char *date);
+char* news_div(int size);
 char* html_end();
 %}
  
@@ -43,7 +60,7 @@ char* html_end();
 
 %token <str> T_PUNCTUATION
 
-%type <str> newspaper_stmt string word_list word item_list news_list news elements element elem_list elem
+%type <str> newspaper_stmt string word_list word item_list news_list news elem_list elem
 
 %start newspaper_stmt
 
@@ -62,6 +79,8 @@ newspaper_stmt:
 			news_list
 		'}'
 							{
+								col = $13;
+
 								F = fopen("newspaper.html","w");
 
 								printf("%s\n%s\n%d\n", $5, $8, $13);
@@ -88,7 +107,7 @@ newspaper_stmt:
 							}
 ;
 
-news_list:news_list news	{	$$ = concat(3, $1, ";", $2); }
+news_list:news_list news	{	$$ = concat(3, $1, ";", $2);}
 		| news				{	$$ = $1; }
 ;
 
@@ -98,25 +117,30 @@ news:	T_WORD '{'
 				T_COL '=' T_INT
 				T_SHOW '=' elem_list
 			'}'
-		'}'					{	$$ = makenews($3, $11); }
+		'}'					
+							{
+								int size;
+								news.col = $8;
+								size = news.col/col*12;
+								printf("%s", news.element[NEWS_ABS]);
+							}
 ;
 
-elements: elements element	{	char str[] = ";";
-								$$ = concat(3, $1, str, $2); }
-		| element			{	$$ = $1; }
+elements: elements element
+		| element
 ;
 
-element:  T_ABSTRACT '=' string { $$ = concat(2, "ABSTRACT:", $3); }
-		| T_AUTHOR '=' string	{ $$ = concat(2, "AUTHOR:", $3); }
-		| T_DATE '=' string		{ $$ = concat(2, "DATE:", $3); }
-		| T_IMAGE '=' string	{ $$ = concat(2, "IMAGE:", $3); }
-		| T_SOURCE '=' string	{ $$ = concat(2, "SOURCE:", $3); }
-		| T_TEXT '='string		{ $$ = concat(2, "TEXT:", $3); }
-		| T_TITLE '=' string 	{ $$ = concat(2, "TITLE:", $3); }
+element:  T_ABSTRACT '=' string { news.element[NEWS_ABS] = $3; }
+		| T_AUTHOR '=' string	{ news.element[NEWS_AUTHOR] = $3; }
+		| T_DATE '=' string		{ news.element[NEWS_DATE] = $3; }
+		| T_IMAGE '=' string	{ news.element[NEWS_IMAGE] = $3; }
+		| T_SOURCE '=' string	{ news.element[NEWS_SOURCE] = $3; }
+		| T_TEXT '='string		{ news.element[NEWS_TEXT] = $3; }
+		| T_TITLE '=' string 	{ news.element[NEWS_TITLE	] = $3; }
 ;
 
 elem_list:elem_list ',' elem	{ $$ = concat(3,$1,";",$3); }
-		| elem					{ $$ = $1; }
+		| elem					{ $$ = $1;}
 ;
 		
 elem: 	  T_ABSTRACT 			{ $$ = "ABSTRACT"; }
@@ -171,53 +195,6 @@ word: T_WORD				{ 	$$ = $1; }
 
 
 %%
-
-char* html_head(char *title) {
-	char *before =	"<!DOCTYPE html>"
-					"<html lang=\"en\">"
-  					"<head>"
-    				"<meta charset=\"utf-8\">"
-    				"<title>";
-	char *after = 	"</title>"
-    				"<link href=\"bootstrap.css\" rel=\"stylesheet\">"
-  					"</head>";
-  	return concat(3, before, title, after);
-}
-
-char* html_begin() {
-	return			"<!DOCTYPE html>\n"
-					"<html lang=\"pt-br\">\n";
-}
-
-char* meta(char *title) {
-  	char *before =	"<head>\n"
-    				"<meta charset=\"utf-8\">\n"
-    				"<title>\n";
-	char *after = 	"</title>\n"
-    				"<link href=\"bootstrap.css\" rel=\"stylesheet\">\n"
-  					"</head>\n";
-  	return concat(3, before, title, after);
-}
-
-char* header(char *title, char *date) {
-  	char *bef_title =	"<body>\n"
-    					"<div class=\"container\">\n"
-      					"<h1 class=\"text-center\">";
-
-    char *bef_date =	"</h1>\n"
-    					"<h4 class=\"text-center\">";
-
-    char *after_date = 	"</h4>\n";
-
-    return concat(5, bef_title, title, bef_date, date, after_date);
-}
-
-char* html_end() {
-	return			"</div>\n"
-					"</body>\n"
-					"</html>\n";
-}
-
 char* makenews(char *elem, char *list) {
 	return "teste: noticia!";
 }
@@ -274,4 +251,60 @@ int main(int argc, char** argv)
 {
 	yyparse();
     return 0;
+}
+
+char* html_head(char *title) {
+	char *before =	"<!DOCTYPE html>"
+					"<html lang=\"en\">"
+  					"<head>"
+    				"<meta charset=\"utf-8\">"
+    				"<title>";
+	char *after = 	"</title>"
+    				"<link href=\"bootstrap.css\" rel=\"stylesheet\">"
+  					"</head>";
+  	return concat(3, before, title, after);
+}
+
+char* html_begin() {
+	return			"<!DOCTYPE html>\n"
+					"<html lang=\"pt-br\">\n";
+}
+
+char* meta(char *title) {
+  	char *before =	"<head>\n"
+    				"<meta charset=\"utf-8\">\n"
+    				"<title>\n";
+	char *after = 	"</title>\n"
+    				"<link href=\"bootstrap.css\" rel=\"stylesheet\">\n"
+  					"</head>\n";
+  	return concat(3, before, title, after);
+}
+
+char* header(char *title, char *date) {
+  	char *bef_title =	"<body>\n"
+    					"<div class=\"container\">\n"
+      					"<h1 class=\"text-center\">";
+
+    char *bef_date =	"</h1>\n"
+    					"<h4 class=\"text-center\">";
+
+    char *after_date = 	"</h4>\n";
+
+    return concat(5, bef_title, title, bef_date, date, after_date);
+}
+
+char* html_end() {
+	return			"</div>\n"
+					"</body>\n"
+					"</html>\n";
+}
+
+char* news_div(int size) {
+	char buffer[8];
+	sprintf(buffer, "%d", size);
+
+	char *before_span =	"<div class=\"span8";
+	char *after_span = "</div>\n";
+
+	return concat(6, before_span, buffer, ">\n<p>\n", news.element[NEWS_ABS], "</p>\n", after_span);
 }
