@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #define MAX_NEWS 1024
 
@@ -84,7 +85,6 @@ char* html_end();
 
 %start newspaper_stmt
 
-%error-verbose
 
 %%
 
@@ -113,7 +113,6 @@ newspaper_stmt:
 
 							  for (i = 0; i < nitems; i++) {
 							    for (j = 0; j < news_c; j++) {
-							      printf("%s %s\n", items[i], newspaper.tag[j]);
 							      if (!strncmp(tolowerstr(items[i]), tolowerstr(newspaper.tag[j]), 16)) {
 								fprintf(F, "%s", news_begin(newspaper.col[j]));			  
 								fprintf(F, "%s", newspaper.html[j]);

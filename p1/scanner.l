@@ -25,7 +25,6 @@ INDENT	[:]+[a-zA-Z0-9\x80-\xf3 \t]+
 
 
 %option case-insensitive
-%option debug
 
 %%
 
