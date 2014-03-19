@@ -22,7 +22,6 @@ PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 
 
 %option case-insensitive
-%option debug
 
 %%
 

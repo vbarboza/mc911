@@ -148,7 +148,8 @@ element:  T_ABSTRACT '=' string { news.element[NEWS_ABS] 	= $3; }
 		| T_SOURCE '=' string	{ enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
 									news.element[NEWS_SOURCE] = $3; }
 		| T_TEXT '='string		{ 	enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
-									news.element[NEWS_TEXT] 	= $3; }
+									news.element[NEWS_TEXT] 	= $3;
+									news.show[NEWS_TEXT] = 10;    }
 		| T_TITLE '=' string 	{ news.element[NEWS_TITLE] 	= $3; }
 ;
 
@@ -378,11 +379,38 @@ char* news_begin(char *title) {
 
 	return buffer;
  }
+ 
+ char* winbody(char *txt) {
+ 	
+ 	char *buffer = "<div class=\"row\"> <div class=\"span12\">\n<p>";
+ 	buffer = concat(3, buffer, txt, "</p></div>\n");
+ 	return buffer;
+ }
 
 char* news_title(char *title) {	
-	return concat(3,	"<h3>",
-						title,
-						"</h3>\n");
+	char *buff, *link;
+	FILE *newFILE;
+	char *filebuff;
+	
+	char *title2 = strdup(title);
+	
+	char *link1 = "<h3><a href onclick=\"window.open(&#39;";
+	char *link2 = "&#39;,&#39;headline1&#39;,&#39;width=720,height=500,scrollbars=yes,screenX=400,screenY=200&#39;)\">";
+	
+	if(news.show[NEWS_TEXT]) {
+		printf("TESTE TESTE TESTEEEAPSODIFJASPODFJAOSFJASOPFJOASDFJOPASFD\n\n\n\n\n");
+		char *name = concat(2,strtok(title," "),".html");
+		newFILE = fopen(name,"w");
+		filebuff = concat(6, html_begin(),meta(title2),header(title2, ""),
+                                winbody(news.element[NEWS_TEXT]),news_end(),html_end());
+        fprintf(newFILE,"%s",filebuff);
+        fclose(newFILE);
+        link = concat(3,link1,name,link2);
+		buff = concat(3,link,title2,"</a></h3>\n");
+	}
+	else { buff = concat(3, "<h3>",title2,"</h3>\n");} 
+	
+	return buff;
 }
 
 int count_elem() {
@@ -433,7 +461,7 @@ char* news_paragraph(char *paragraph) {
 			case NEWS_DATE:		buff = add_date(buff); break;
 			case NEWS_IMAGE: 	buff = add_image(buff); break;
 			case NEWS_SOURCE:	break;
-			//case NEWS_TEXT:		buff = add_txtsource(); break;		
+			case NEWS_TEXT:		break;		
 		}
 		cur++;
 	}
