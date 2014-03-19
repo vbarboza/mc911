@@ -35,7 +35,7 @@ static struct {
 	int	    show[7];
 } news;
 
-static news_c = 0;
+static int news_c = 0;
 
 FILE *F;
 
@@ -256,7 +256,10 @@ word: T_WORD				{ 	$$ = $1; }
 								char *str = "<br>";
 								char num[4];
 								char *recuo = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-								while($1[clvl++] == '#' ) str=concat(2,str,recuo);
+								while($1[clvl] == '#' ) {
+									str=concat(2,str,recuo);
+									clvl++;
+								}
 								switch(clvl) {
 									case 0: sprintf(num,"%d",enum_cnt0++); break;
 									case 1: sprintf(num,"%d",enum_cnt1++); break;
