@@ -55,7 +55,7 @@ char* html_end();
 %token <str>T_AUTHOR
 %token <str>T_SOURCE
 %token <str>T_INDENT
-%token T_BULLET
+%token <str>T_BULLET
 %token T_ENUM
 
 %token <str> T_PUNCTUATION
@@ -191,11 +191,30 @@ word: T_WORD				{ 	$$ = $1; }
 	| T_TEXT				{ 	$$ = $1;  }
 	| T_AUTHOR				{ 	$$ = $1;  }
 	| T_SOURCE				{ 	$$ = $1;  }
-	| T_BULLET				{	static int current_level = 0;
-															
-	}
+	| T_BULLET				{	
+								static int lvl=0;
+								//conta numero de '*'
+								int i=1; int clvl = 0;
+								char *str;
+								while($1[i] == '*' ) {clvl++;i++;}
+								if(clvl > lvl) {
+									str = concat(2,"<ul> <li>",&$1[i]);
+									lvl++;
+								}
+								else if(clvl < lvl) {
+									str = concat(2, "</ul><li>", &$1[i]);
+									lvl--;
+								}
+								else str = concat(2,"<li>",&$1[i]);
 								
+								if(yychar != T_BULLET) {
+									str = concat(2, str, "</ul>");
+									lvl--;
+								}
+								$$ = str;  
+							}				
 ;
+
 
 
 %%
