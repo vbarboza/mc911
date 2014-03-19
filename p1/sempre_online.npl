@@ -23,35 +23,9 @@ newspaper{
 		// Atributos Obrigatórios
 		// 	--col= quantidade de colunas do jornal 
 		//	--show= ordem dos objetos a serem inseridos no jornal
-		col= 3  
+		col= 6
 		show= headline1, Editorial2, headline2, noticia3, Editorial1
 	}
-
-	//Notícias para serem colocadas na página principal do site.
-	//O nome do objeto de cada notícia DEVE obedecer à seguinte regra de formação: 
-		//   1. Deve iniciar com uma letra
-		//   2. Deve conter apenas letras, números ou o caractere "_" (underscore/sublinhado)
-		//   3. A linguagem não faz diferença entre maiúsculas e minúsculas, isto é, news1 e NEWs1 são o 
-		//	mesmo nome em NPL.
-		//Atributos Obrigatórios: 
-		//   --title= título da manchete
-		//   --abstract= resumo da notícia
-		//   --author= autor da noticia
-		//   --structure: objeto encapsulando a definição da estrutura da notícia
-		//Atributos opcionais:
-		//   --date= data da noticia
-		//   --image= uma foto associada a noticia
-		//   --source= a fonte de onde foi retirada a noticia. Deve ser mostrada somente na exibição da noticia completa
-		//   --text= Texto completo da noticia. Quando este campo é fornecido, o título da notícia deve ser exibido no site como
-		//           um link que, ao ser clicado, mostra o texto completo da noticia. Na página inicial do site sempre aparece
-		//           apenas o abstract.
-		//
-		//Note que campos onde são inseridos textos estão delimitados por aspas duplas. Para usar aspas duplas dentro 
-		//	desses campos você deve usar \"
-		//
-		//Os campos: "title", "abstract", "author", "date", "image", "source" e "text" não necessitam de ordem específica.
-		//O objeto "structure" deve ser o último a ser declarado. Seus atributos internos, "col" e "show", serão declarados 
-		//    nesta sequência.
 
 		headline1{
 			title= "Virada Cultural Paulista tem programação até as 18h deste domingo"
@@ -68,22 +42,6 @@ newspaper{
 				Ribeirão Preto, Santos, São Bernardo do Campo, 
 				São José do Rio Preto, São João da Boa Vista, São José dos Campos e Sorocaba são as outras cidades."
 
-		    	//text= Este é o campo que contém o texto completo da notícia. Ele deve ser exibido caso o usuário clique 
-			// no título da manchete. É possível usar mecanismos de formatação, iguais àqueles da linguagem da wikipedia 
-			// (http://pt.wikipedia.org/wiki/Ajuda:Guia_de_edição/Formatação#Os_c.C3.B3digos_wiki_para_formatar_artigos). 
-			// A formatação considerada será: 
-		    	//
-			// Link Texto: [ url | texto exibido ]
-			// Link Imagens: [[ ./url.jpg | legenda ]]
-		    	// Parágrafo de titulo: === texto ===
-		    	// Recuo de parágrafo: o caractere ":" indica quantos recuos. Cada ":" equivale a 6 "&nbsp;". 
-		    	// Italico: ''texto''
-			// Negrito: '''texto'''
-			// Negrito e Italico: '''''texto''''' 
-			// Bullet: Cada caractere "*" marca um nível (ver Editorial2)
-			// Numeração: Cada caractere "#" marca um nível (ver Editorial2)
-			//
-			//Veja o resultado da renderização e o código HTML deste texto no exemplo em HTML fornecido.
 
 		    	text= "A [http://viradacultural.org | Virada Cultural Paulista], que se iniciou ontem em 20 cidades do Estado, 
 				prossegue neste domingo até as 18h. Ao todo, segundo o governo de São Paulo, são mais de 500 
@@ -111,9 +69,6 @@ newspaper{
 			source= "Central de Informações da Virada Cultural"
 
 			structure {
-				//Atributos obrigatorios
-				//	--col= quantidade de colunas que a notícia ocupará
-				//	--show= ordem em que os atributos da notícia irão aparecer
 				col= 2
 				show= title, image, abstract
 			}

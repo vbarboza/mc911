@@ -85,20 +85,7 @@ newspaper_stmt:
 							{
 								col = $13;
 
-								F = fopen("newspaper.html","w");
-
-								printf("%s\n%s\n%d\n", $5, $8, $13);
-
-								char **itemlist = get_items($16);
-								//imprime cabecalho
-								char *str = itemlist[0];
-								int pos = 1;
-								while(str) {
-									printf("%s\n",str);
-									str = itemlist[pos];
-									pos++;
-								}
-								
+								F = fopen("newspaper.html","w");								
                                 fprintf(F, "%s", concat(5,
                                 						html_begin(),
                                 						meta($5),
@@ -126,7 +113,7 @@ news:	T_WORD '{'
 							{
 								int i;
 
-								news.col = 2;
+								news.col = $8;
 
 								$$ = concat(4, 	news_begin(),
 												news_title(news.element[NEWS_TITLE]),
@@ -368,8 +355,8 @@ char* news_begin(char *title) {
 	char  	sizbuf[8];
 	char   *buffer;
 
-	//size = news.col/col*12;
-	size = 4;
+	size = ((news.col*12)/col);
+	//size = 4;
 
 	if (cc == 0) {
 		buffer = "<div class=\"row\">";
