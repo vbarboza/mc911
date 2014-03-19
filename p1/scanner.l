@@ -8,7 +8,7 @@ INTEGER		[0-9]+
 WHITESPACE	[ \n\r\t]+
 COMMENT	\/\/.*\n
 INDENT	\n[\:]+
-BULLET	\n[\*]+
+BULLET	\n[\*]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
 ENUM	\n[\#]+
 ANY_CHAR .
 PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
@@ -47,7 +47,7 @@ PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 					sprintf(&str[6*count],"&nbsp;");
 				yylval.str = str;
 				return T_WORD;}
-{BULLET}	{return T_BULLET;}
+{BULLET}	{yylval.str = (char *) strdup(yytext); return T_BULLET;}
 {ENUM}		{return T_ENUM;}
 "'''"		{yylval.str = "<b>"; return T_WORD; }
 "''"		{yylval.str = "<i>"; return T_WORD; }

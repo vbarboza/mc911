@@ -54,7 +54,7 @@ char* html_end();
 %token <str>T_TEXT
 %token <str>T_AUTHOR
 %token <str>T_SOURCE
-%token T_INDENT
+%token <str>T_INDENT
 %token T_BULLET
 %token T_ENUM
 
@@ -191,6 +191,8 @@ word: T_WORD				{ 	$$ = $1; }
 	| T_TEXT				{ 	$$ = $1;  }
 	| T_AUTHOR				{ 	$$ = $1;  }
 	| T_SOURCE				{ 	$$ = $1;  }
+	| T_BULLET				{	static int current_level = 0;
+								
 ;
 
 
