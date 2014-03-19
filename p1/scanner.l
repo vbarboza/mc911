@@ -12,14 +12,13 @@ WORD		[a-z][a-zA-Z0-9\x80-\xf3]*
 INTEGER		[0-9]+
 WHITESPACE	[ \n\r\t]+
 COMMENT	\/\/.*\n
-INDENT	[:]+
 BULLET	[\*]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
 ENUM	[\#]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
 ANY_CHAR .
 URL		[./:]*[a-zA-Z0-9][a-zA-Z0-9:/.]+
 PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 INTITLE		===[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*===
-
+INDENT	[:]+[a-zA-Z0-9\x80-\xf3]+
 
 
 %option case-insensitive
@@ -57,12 +56,18 @@ INTITLE		===[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*===
 				buff[len-3] = '\0';
 				yylval.str = concat2(3,"<h4>",buff,"</h4>"); return T_WORD; }
 				
-{INDENT}	{	int i = strlen(yytext);
-				char *buff = "<br>";
-				for(int count=0;count<i;count++)
-					buff = concat2(2,buff,"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-				yylval.str = buff;
-				return T_WORD;}
+{INDENT} 	{	char *buff = (char *) strdup(yytext);
+				int i=0;
+				while(buff[i] == ':') i++;
+				int cnt=0;
+				buff = &buff[i];
+
+				while(cnt < i) {
+						buff = concat2(2,"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",buff);
+						cnt++;
+				}
+				buff = concat2(2,"<br>\n",buff);
+				yylval.str = buff; return T_WORD;}
 {BULLET}	{yylval.str = (char *) strdup(yytext); return T_BULLET;}
 {ENUM}		{yylval.str = (char *) strdup(yytext); return T_ENUM;}
 
