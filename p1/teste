@@ -3,16 +3,22 @@ newspaper {
 	date= "24 de fevereiro de 2014"
 	structure {
 		col= 3
-		show = headline1, headline2, head3, teste4
+		show = headline1
 	}
 	
 	headline1 {
 		title= "teste news 1"
 		date = "3 do 2 do 4"
-		text = "blablablablabla"
+		abstract = "blablablablabla blablabla
+				:recuo 1
+				::recuo 2
+				*item1
+				**item2
+				#enum1
+				#enum2"
 		structure {
-			col= 1
-			show= title, date, text
+			col= 2
+			show= abstract, date, text
 		}
 	}
 }

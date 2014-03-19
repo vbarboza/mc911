@@ -17,6 +17,7 @@
 static int col = 3;
 static int cc  = 0;
 static int news_or = 1;
+static int lvl=0;
 
 static struct {
 	char 	*element[7];
@@ -210,7 +211,6 @@ word: T_WORD				{ 	$$ = $1; }
 	| T_AUTHOR				{ 	$$ = $1;  }
 	| T_SOURCE				{ 	$$ = $1;  }
 	| T_BULLET				{	
-								static int lvl=0;
 								//conta numero de '*'
 								int i=1; int clvl = 0;
 								char *str;
@@ -232,7 +232,7 @@ word: T_WORD				{ 	$$ = $1; }
 								$$ = str;  
 							}
 	| T_ENUM				{	
-								static int lvl=0;
+								
 								//conta numero de '*'
 								int i=1; int clvl = 0;
 								char *str;

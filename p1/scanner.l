@@ -9,7 +9,7 @@ WHITESPACE	[ \n\r\t]+
 COMMENT	\/\/.*\n
 INDENT	\n[\:]+
 BULLET	\n[\*]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
-ENUM	\n[\#]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
+ENUM	\n[\#]+[a-zA-Z0-9\x80-\xf3 \r\t!#$%&'()*+./:;<>?@\^_`~-]*
 ANY_CHAR .
 PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 URL		[a-zA-Z0-9:/.]+
