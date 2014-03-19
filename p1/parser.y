@@ -23,12 +23,6 @@ static struct {
 	int 	col;
 } news;
 
-
-for (i = 0; i < 7; i++) {
-	news.element[i] = 0;
-	news.show[i] = 0;
-}
-
 FILE *F;
 
 int yylex(void);
@@ -135,7 +129,7 @@ news:	T_WORD '{'
 								$$ = news_div(size);
 								
 								for (i = 0; i < 7; i++) {
-									news.element[i] = 0;
+									
 									news.show[i] = 0;
 								}
 							}
