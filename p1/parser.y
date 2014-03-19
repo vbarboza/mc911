@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MAX_NEWS 10
+#define MAX_NEWS 1024
 
 #define NEWS_TITLE	0
 #define NEWS_ABS 	1
@@ -14,39 +14,40 @@
 #define NEWS_SOURCE 5
 #define NEWS_TEXT 	6
 
-static int col = 3;
+static int col = 0;
 static int cc  = 0;
-static int news_or = 1;
 
-static int enum_cnt0=1;
-static int enum_cnt1=1;
-static int enum_cnt2=1;
-static int enum_cnt3=1;
+static int news_or  = 1;
+
+static int enum_cnt0= 1;
+static int enum_cnt1= 1;
+static int enum_cnt2= 1;
+static int enum_cnt3= 1;
 
 static struct {
 	char 	*html[MAX_NEWS];
 	char    *tag[MAX_NEWS];
+    int      col[MAX_NEWS];
 } newspaper;
 
 static struct {
 	char 	*element[7];
-	int	show[7];
-	int 	col;
+	int	    show[7];
 } news;
 
- static news_c = 0;
+static news_c = 0;
 
 FILE *F;
 
 int yylex(void);
 int yyerror(const char* errmsg);
-char *concat(int count, ...);
+char* concat(int count, ...);
 char** get_items(char *str, int *nitems);
 char* tolowerstr(char* string);
 char* html_begin();
 char* meta(char *title);
 char* header(char *title, char *date);
-char* news_begin();
+char* news_begin(int cols);
 char* news_title(char *title);
 char* news_paragraph(char *paragraph);
 char* news_image(char *image);
@@ -75,10 +76,10 @@ char* html_end();
 %token <str>T_INDENT
 %token <str>T_BULLET
 %token <str>T_ENUM
-%token T_NTITLE
+
+
 
 %token <str> T_PUNCTUATION
-
 %type <str> newspaper_stmt string word_list word item_list news_list news elem_list elem
 
 %start newspaper_stmt
@@ -101,6 +102,7 @@ newspaper_stmt:
 							  int i, j, nitems;
 							  char **items;
 
+                              col = $13;
 							  F = fopen("newspaper.html","w");
 
 							  fprintf(F, "%s", html_begin());
@@ -112,8 +114,10 @@ newspaper_stmt:
 							  for (i = 0; i < nitems; i++) {
 							    for (j = 0; j < news_c; j++) {
 							      printf("%s %s\n", items[i], newspaper.tag[j]);
-							      if (!strncmp(tolowerstr(items[i]), tolowerstr(newspaper.tag[j]), 16))
-								  fprintf(F, "%s", newspaper.html[j]);
+							      if (!strncmp(tolowerstr(items[i]), tolowerstr(newspaper.tag[j]), 16)) {
+								fprintf(F, "%s", news_begin(newspaper.col[j]));			  
+								fprintf(F, "%s", newspaper.html[j]);
+							      }
 							    }							    
 							  }
 							  fprintf(F, "%s", html_end());
@@ -137,16 +141,15 @@ news:	T_WORD '{'
 							{
 								int i;
 
-								news.col = $8;
-
-								$$ = concat(4, 	news_begin(),
-												news_title(news.element[NEWS_TITLE]),
-												news_paragraph(news.element[NEWS_ABS]),
-												news_end());								
+								$$ = concat(3,
+									    news_title(news.element[NEWS_TITLE]),
+									    news_paragraph(news.element[NEWS_ABS]),
+									    news_end());								
 								newspaper.tag[news_c] = $1;
+								newspaper.col[news_c] = $8;
 								newspaper.html[news_c++] = concat(2, "", $$);
 
-								news.show[NEWS_ABS]			= 0;
+								news.show[NEWS_ABS]		= 0;
 								news.show[NEWS_AUTHOR]		= 0;
 								news.show[NEWS_DATE]		= 0;
 								news.show[NEWS_IMAGE]		= 0;
@@ -368,12 +371,12 @@ char* html_end() {
 					"</html>\n";
 }
 
-char* news_begin(char *title) {
+char* news_begin(int cols) {
 	int 	i, size;
 	char  	sizbuf[8];
 	char   *buffer;
 
-	size = ((news.col*12)/col);
+	size = ((cols*12)/col);
 	//size = 4;
 
 	if (cc == 0) {

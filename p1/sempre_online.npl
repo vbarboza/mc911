@@ -23,7 +23,7 @@ newspaper{
 		// Atributos Obrigatórios
 		// 	--col= quantidade de colunas do jornal 
 		//	--show= ordem dos objetos a serem inseridos no jornal
-		col= 6
+		col= 3
 		show= headline1, Editorial2, headline2, noticia3, Editorial1
 	}
 
@@ -33,9 +33,9 @@ newspaper{
 			image= "./virada.jpg"
 
 			abstract= "A Virada Cultural Paulista, que se iniciou ontem em 20 cidades do Estado, prossegue neste domingo 
-			 	até as 18h. Ao todo, segundo o governo de São Paulo, são mais de 500 apresentações nas 
-				24 horas de programação. A lista de eventos inclui exibições de peças de teatro, dança, música e cinema. 
-				O governo espera 1 milhão de pessoas nas 24 horas de atividades. Os espetáculos têm entrada 
+			 	até as 18h. '''''Ao todo''''', segundo o governo de São Paulo, são mais de 500 apresentações nas 
+				24 horas de programação. '''A lista''' de eventos inclui exibições de peças de teatro, dança, música e cinema. 
+				O governo espera 1 milhão de pessoas ''nas 24'' horas de atividades. Os espetáculos têm entrada 
 				franca e as unidades do Sesc e do Sesi têm programação integrada ao evento.
 				Santa Bárbara d'Oeste e Mogi Guaçu participam do evento pela primeira vez. Araraquara, Araçatuba, 
 				Assis, Bauru, Caraguatatuba, Franca, Indaiatuba, Jundiaí, Marília, Mogi das Cruzes, Presidente Prudente, 
