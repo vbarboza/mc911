@@ -15,7 +15,7 @@
 #define NEWS_TEXT 	6
 
 static int col = 3;
-
+static int cc  = 0;
 static struct {
 	char 	*element[7];
 	int		show[7];
@@ -95,10 +95,11 @@ newspaper_stmt:
 									pos++;
 								}
 								
-                                fprintf(F, "%s", concat(4,
+                                fprintf(F, "%s", concat(5,
                                 						html_begin(),
                                 						meta($5),
                                 						header($5, $8),
+                                						$18,
                                 						html_end())
                                 		);
 
@@ -107,7 +108,7 @@ newspaper_stmt:
 							}
 ;
 
-news_list:news_list news	{	$$ = concat(3, $1, ";", $2);}
+news_list:news_list news	{	$$ = concat(3, $1, "\n", $2);}
 		| news				{	$$ = $1; }
 ;
 
@@ -123,6 +124,7 @@ news:	T_WORD '{'
 								news.col = $8;
 								size = news.col/col*12;
 								printf("%s", news.element[NEWS_ABS]);
+								$$ = news_div(size);
 							}
 ;
 
@@ -307,8 +309,8 @@ char* news_div(int size) {
 	char buffer[8];
 	sprintf(buffer, "%d", size);
 
-	char *before_span =	"<div class=\"span8";
+	char *before_span =	"<div class=\"span";
 	char *after_span = "</div>\n";
 
-	return concat(6, before_span, buffer, ">\n<p>\n", news.element[NEWS_ABS], "</p>\n", after_span);
+	return concat(6, before_span, buffer, ">\n<p>\n", news.element[NEWS_TITLE], "</p>\n", after_span);
 }
