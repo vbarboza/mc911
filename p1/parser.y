@@ -68,6 +68,7 @@ char* html_end();
 %token <str>T_INDENT
 %token <str>T_BULLET
 %token <str>T_ENUM
+%token T_NTITLE
 
 %token <str> T_PUNCTUATION
 

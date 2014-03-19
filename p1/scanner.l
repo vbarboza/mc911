@@ -18,10 +18,12 @@ ENUM	[\#]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
 ANY_CHAR .
 URL		[./:]*[a-zA-Z0-9][a-zA-Z0-9:/.]+
 PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
+INTITLE		===[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*===
 
 
 
 %option case-insensitive
+%option debug
 
 %%
 
@@ -39,7 +41,7 @@ PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 "text"		{yylval.str = (char *) strdup(yytext); return T_TEXT;} 
 "author" 	{yylval.str = (char *) strdup(yytext); return T_AUTHOR;}
 "source"	{yylval.str = (char *) strdup(yytext); return T_SOURCE;}
-"="			{return '=';}
+
 "\\\""		{return '"';} 
 "\""		{return '"';}
 "{"			{return '{';}
@@ -48,6 +50,13 @@ PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 "]"			{return ']';}
 "|"			{return '|';}
 ","			{return ',';}
+
+{INTITLE} 	{ 	char *buff = (char *) strdup(yytext);
+				buff = &buff[3];
+				int len = strlen(buff);
+				buff[len-3] = '\0';
+				yylval.str = concat2(3,"<h4>",buff,"</h4>"); return T_WORD; }
+				
 {INDENT}	{	int i = strlen(yytext);
 				char *buff = "<br>";
 				for(int count=0;count<i;count++)
@@ -59,7 +68,7 @@ PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 
 "'''"		{yylval.str = "<b>"; return T_WORD; }
 "''"		{yylval.str = "<i>"; return T_WORD; }
-
+"="			{return '=';}
 
 
 {INTEGER} {	
