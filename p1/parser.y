@@ -23,19 +23,26 @@ static int enum_cnt1=1;
 static int enum_cnt2=1;
 static int enum_cnt3=1;
 
+static struct {
+	char 	*html[MAX_NEWS];
+	char    *tag[MAX_NEWS];
+} newspaper;
 
 static struct {
 	char 	*element[7];
-	int		show[7];
+	int	show[7];
 	int 	col;
 } news;
+
+ static news_c = 0;
 
 FILE *F;
 
 int yylex(void);
 int yyerror(const char* errmsg);
 char *concat(int count, ...);
-char **get_items(char *str);
+char** get_items(char *str, int *nitems);
+char* tolowerstr(char* string);
 char* html_begin();
 char* meta(char *title);
 char* header(char *title, char *date);
@@ -91,24 +98,33 @@ newspaper_stmt:
 			news_list
 		'}'
 							{
-								col = $13;
+							  int i, j, nitems;
+							  char **items;
 
-								F = fopen("newspaper.html","w");								
-                                fprintf(F, "%s", concat(5,
-                                						html_begin(),
-                                						meta($5),
-                                						header($5, $8),
-                                						$18,
-                                						html_end())
-                                		);
+							  F = fopen("newspaper.html","w");
 
-                                fclose(F);
+							  fprintf(F, "%s", html_begin());
+							  fprintf(F, "%s", meta($5));
+							  fprintf(F, "%s", header($5, $8));
 
+							  items = get_items($16, &nitems);
+
+							  for (i = 0; i < nitems; i++) {
+							    for (j = 0; j < news_c; j++) {
+							      printf("%s %s\n", items[i], newspaper.tag[j]);
+							      if (!strncmp(tolowerstr(items[i]), tolowerstr(newspaper.tag[j]), 16))
+								  fprintf(F, "%s", newspaper.html[j]);
+							    }							    
+							  }
+							  fprintf(F, "%s", html_end());
+							  
+							  fclose(F);
+							  
 							}
 ;
 
 news_list:news_list news	{	$$ = concat(3, $1, "\n", $2);}
-		| news				{	$$ = $1; }
+         | news			{	$$ = $1;}
 ;
 
 news:	T_WORD '{'
@@ -126,7 +142,10 @@ news:	T_WORD '{'
 								$$ = concat(4, 	news_begin(),
 												news_title(news.element[NEWS_TITLE]),
 												news_paragraph(news.element[NEWS_ABS]),
-												news_end());
+												news_end());								
+								newspaper.tag[news_c] = $1;
+								newspaper.html[news_c++] = concat(2, "", $$);
+
 								news.show[NEWS_ABS]			= 0;
 								news.show[NEWS_AUTHOR]		= 0;
 								news.show[NEWS_DATE]		= 0;
@@ -168,8 +187,8 @@ elem: 	  T_ABSTRACT 			{ news.show[NEWS_ABS] 		= news_or++; }
 ;
 
 item_list: item_list ',' T_WORD	{ char str[] = ";";
-								  $$ = concat(3, $1,str, $3); }
-		| T_WORD				{ $$ = $1; }
+		  $$ = concat(3, $1,str, $3); }
+| T_WORD				{ $$ = $1; }
 ;
 
 string: '"' word_list '"' { $$ = $2; }
@@ -250,20 +269,19 @@ word: T_WORD				{ 	$$ = $1; }
 
 %%
 
-char **get_items(char *str) {
-	char **list = (char **)malloc(MAX_NEWS*sizeof(char *));
-	
-	char *pch = strtok(str,";");
-	list[0] = pch;
-	
-	int pos = 1;
+char** get_items(char *str, int *nitems) {
+  int pos = 0;
+  char *pch = strtok(str,";");
+  char **list = (char **)malloc(MAX_NEWS*sizeof(char *));
 
-	while(pch) {
-		pch = strtok(NULL,";");
-		list[pos]=pch;
-		pos++;
-	}
-	return list;	
+  while(pch) {
+    list[pos++] = pch;
+    pch = strtok(NULL,";");
+  }
+
+  *nitems = pos;
+
+  return list;	
 }
 
 char* concat(int count, ...)
@@ -478,3 +496,12 @@ char* news_image(char *image) {
 char* news_end() {
 	return "</div>";
 }
+
+char* tolowerstr(char* str) {
+  int i;
+  char *buff = (char *)strdup(str);
+  for(i = 0; buff[i]; i++){
+    buff[i] = tolower(buff[i]);
+  }
+  return buff;
+ }
