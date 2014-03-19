@@ -1,18 +1,24 @@
 %{
 #include "parser.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
+
+char* concat2(int count, ...);
 %}
 
 WORD		[a-z][a-zA-Z0-9\x80-\xf3]*
 INTEGER		[0-9]+
 WHITESPACE	[ \n\r\t]+
 COMMENT	\/\/.*\n
-INDENT	\n[\:]+
-BULLET	\n[\*]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
-ENUM	\n[\#]+[a-zA-Z0-9\x80-\xf3 \r\t!#$%&'()*+./:;<>?@\^_`~-]*
+INDENT	[:]+
+BULLET	[\*]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
+ENUM	[\#]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
 ANY_CHAR .
+URL		[./:]*[a-zA-Z0-9][a-zA-Z0-9:/.]+
 PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
-URL		[a-zA-Z0-9:/.]+
+
 
 
 %option case-insensitive
@@ -20,8 +26,9 @@ URL		[a-zA-Z0-9:/.]+
 
 %%
 
+
 {WHITESPACE} /* ignore */
-{COMMENT}  	/* ignore */;
+
 "newspaper"	{yylval.str = (char *) strdup(yytext); return T_NEWSPAPER;}
 "title" 	{yylval.str = (char *) strdup(yytext); return T_TITLE;}
 "date"		{yylval.str = (char *) strdup(yytext); return T_DATE;}
@@ -42,22 +49,19 @@ URL		[a-zA-Z0-9:/.]+
 "]"			{return ']';}
 "|"			{return '|';}
 ","			{return ',';}
-{INDENT}	{	int i = strlen(yytext)-1;
-				char *str = (char *)malloc((i*6*6+1)*sizeof(char));
-				int count=0;
-				for(count=0;count<i;count++)
-					sprintf(&str[6*count],"&nbsp;");
-				yylval.str = str;
+{INDENT}	{	int i = strlen(yytext);
+				char *buff = "<br>";
+				for(int count=0;count<i;count++)
+					buff = concat2(2,buff,"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+				yylval.str = buff;
 				return T_WORD;}
 {BULLET}	{yylval.str = (char *) strdup(yytext); return T_BULLET;}
 {ENUM}		{yylval.str = (char *) strdup(yytext); return T_ENUM;}
+
 "'''"		{yylval.str = "<b>"; return T_WORD; }
 "''"		{yylval.str = "<i>"; return T_WORD; }
 
-{PUNCTUATION}	{
-	yylval.str = (char *) strdup(yytext);
-	return T_PUNCTUATION;
-}
+
 
 {INTEGER} {	
 	yylval.integer = atoi(yytext);
@@ -69,11 +73,19 @@ URL		[a-zA-Z0-9:/.]+
 	return T_WORD;
 }
 
+{COMMENT}  	/* ignore */;
+
+{PUNCTUATION}	{
+	yylval.str = (char *) strdup(yytext);
+	return T_PUNCTUATION;
+}
 
 {WORD} {	
 	yylval.str = (char *) strdup(yytext);
 	return T_WORD;
 }
+
+
 
 {ANY_CHAR} {
 	printf ("Caracter %c (ASCII=%d) inesperado\n", yytext[0], yytext[0]);
@@ -84,3 +96,30 @@ URL		[a-zA-Z0-9:/.]+
 int yywrap(void) {
     return 1;
 }
+
+char* concat2(int count, ...)
+{
+    va_list ap;
+    int len = 1, i;
+
+    va_start(ap, count);
+    for(i=0 ; i<count ; i++)
+        len += strlen(va_arg(ap, char*));
+    va_end(ap);
+
+    char *result = (char*) calloc(sizeof(char),len);
+    int pos = 0;
+
+    // Actually concatenate strings
+    va_start(ap, count);
+    for(i=0 ; i<count ; i++)
+    {
+        char *s = va_arg(ap, char*);
+        strcpy(result+pos, s);
+        pos += strlen(s);
+    }
+    va_end(ap);
+
+    return result;
+}
+

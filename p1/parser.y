@@ -17,7 +17,12 @@
 static int col = 3;
 static int cc  = 0;
 static int news_or = 1;
-static int lvl=0;
+
+static int enum_cnt0=1;
+static int enum_cnt1=1;
+static int enum_cnt2=1;
+static int enum_cnt3=1;
+
 
 static struct {
 	char 	*element[7];
@@ -140,8 +145,10 @@ element:  T_ABSTRACT '=' string { news.element[NEWS_ABS] 	= $3; }
 		| T_AUTHOR '=' string	{ news.element[NEWS_AUTHOR] = $3; }
 		| T_DATE '=' string		{ news.element[NEWS_DATE] 	= $3; }
 		| T_IMAGE '=' string	{ news.element[NEWS_IMAGE] 	= $3; }
-		| T_SOURCE '=' string	{ news.element[NEWS_SOURCE] = $3; }
-		| T_TEXT '='string		{ news.element[NEWS_TEXT] 	= $3; }
+		| T_SOURCE '=' string	{ enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
+									news.element[NEWS_SOURCE] = $3; }
+		| T_TEXT '='string		{ 	enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
+									news.element[NEWS_TEXT] 	= $3; }
 		| T_TITLE '=' string 	{ news.element[NEWS_TITLE] 	= $3; }
 ;
 
@@ -212,46 +219,28 @@ word: T_WORD				{ 	$$ = $1; }
 	| T_SOURCE				{ 	$$ = $1;  }
 	| T_BULLET				{	
 								//conta numero de '*'
-								int i=1; int clvl = 0;
-								char *str;
-								while($1[i] == '*' ) {clvl++;i++;}
-								if(clvl > lvl) {
-									str = concat(2,"<ul> <li>",&$1[i]);
-									lvl++;
-								}
-								else if(clvl < lvl) {
-									str = concat(2, "</ul><li>", &$1[i]);
-									lvl--;
-								}
-								else str = concat(2,"<li>",&$1[i]);
-								
-								if(yychar != T_BULLET) {
-									str = concat(2, str, "</ul>");
-									lvl--;
-								}
+								int clvl = 0;
+								char *str = "<br>";
+								char *recuo = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+								while($1[clvl++] == '*' ) str=concat(2,str,recuo);
+								str = concat(3,str,"&bull;&nbsp;",&$1[clvl-1]);
 								$$ = str;  
 							}
-	| T_ENUM				{	
-								
-								//conta numero de '*'
-								int i=1; int clvl = 0;
-								char *str;
-								while($1[i] == '*' ) {clvl++;i++;}
-								if(clvl > lvl) {
-									str = concat(2,"<ol> <li>",&$1[i]);
-									lvl++;
+	| T_ENUM				{
+								//conta numero de '#'
+								int clvl = 0;
+								char *str = "<br>";
+								char num[4];
+								char *recuo = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+								while($1[clvl++] == '#' ) str=concat(2,str,recuo);
+								switch(clvl) {
+									case 0: sprintf(num,"%d",enum_cnt0++); break;
+									case 1: sprintf(num,"%d",enum_cnt1++); break;
+									case 2: sprintf(num,"%d",enum_cnt2++); break;
+									case 3: sprintf(num,"%d",enum_cnt3++); break;
 								}
-								else if(clvl < lvl) {
-									str = concat(2, "</ol><li>", &$1[i]);
-									lvl--;
-								}
-								else str = concat(2,"<li>",&$1[i]);
-								
-								if(yychar != T_BULLET) {
-									str = concat(2, str, "</ol>");
-									lvl--;
-								}
-								$$ = str;  
+								str = concat(4,str,num,". &nbsp;",&$1[clvl-1]);
+								$$ = str;
 							}
 ;
 
