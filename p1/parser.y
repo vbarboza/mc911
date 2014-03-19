@@ -192,6 +192,8 @@ word: T_WORD				{ 	$$ = $1; }
 	| T_AUTHOR				{ 	$$ = $1;  }
 	| T_SOURCE				{ 	$$ = $1;  }
 	| T_BULLET				{	static int current_level = 0;
+															
+	}
 								
 ;
 
