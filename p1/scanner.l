@@ -41,10 +41,10 @@ PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 "|"			{return '|';}
 ","			{return ',';}
 {INDENT}	{	int i = strlen(yytext)-1;
-				char *str = (char *)malloc((i*6*5+1)*sizeof(char));
+				char *str = (char *)malloc((i*6*6+1)*sizeof(char));
 				int count=0;
 				for(count=0;count<i;count++)
-					sprintf(&str[5*count],"&nbsp");
+					sprintf(&str[6*count],"&nbsp;");
 				yylval.str = str;
 				return T_WORD;}
 {BULLET}	{return T_BULLET;}
