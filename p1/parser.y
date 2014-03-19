@@ -16,6 +16,7 @@
 
 static int col = 3;
 static int cc  = 0;
+static int news_or = 1;
 
 static struct {
 	char 	*element[7];
@@ -119,6 +120,14 @@ news:	T_WORD '{'
 												news_title(news.element[NEWS_TITLE]),
 												news_paragraph(news.element[NEWS_ABS]),
 												news_end());
+								news.show[NEWS_ABS]			= 0;
+								news.show[NEWS_AUTHOR]		= 0;
+								news.show[NEWS_DATE]		= 0;
+								news.show[NEWS_IMAGE]		= 0;
+								news.show[NEWS_SOURCE]		= 0;
+								news.show[NEWS_TEXT]		= 0;
+								news.show[NEWS_TITLE]		= 0;
+								news_or = 1;
 							}
 ;
 
@@ -139,13 +148,13 @@ elem_list:elem_list ',' elem
 		| elem				
 ;
 		
-elem: 	  T_ABSTRACT 			{ news.show[NEWS_ABS] 		= 1; }
-		| T_AUTHOR 				{ news.show[NEWS_AUTHOR]	= 1; }
-		| T_DATE 				{ news.show[NEWS_DATE] 		= 1; }
-		| T_IMAGE 				{ news.show[NEWS_IMAGE] 	= 1; }
-		| T_SOURCE 				{ news.show[NEWS_SOURCE]	= 1; }
-		| T_TEXT 				{ news.show[NEWS_TEXT] 		= 1; }
-		| T_TITLE 				{ news.show[NEWS_TITLE] 	= 1; }
+elem: 	  T_ABSTRACT 			{ news.show[NEWS_ABS] 		= news_or++; }
+		| T_AUTHOR 				{ news.show[NEWS_AUTHOR]	= news_or++; }
+		| T_DATE 				{ news.show[NEWS_DATE] 		= news_or++; }
+		| T_IMAGE 				{ news.show[NEWS_IMAGE] 	= news_or++; }
+		| T_SOURCE 				{ news.show[NEWS_SOURCE]	= news_or++; }
+		| T_TEXT 				{ news.show[NEWS_TEXT] 		= news_or++; }
+		| T_TITLE 				{ news.show[NEWS_TITLE] 	= news_or++; }
 ;
 
 item_list: item_list ',' T_WORD	{ char str[] = ";";
@@ -184,8 +193,8 @@ word: T_WORD				{ 	$$ = $1; }
 								}
 	| '[' '[' T_WORD '|' word_list ']' ']' {
 								$$ = concat(5,
-											"<img src=\"", $3,
-											"\" alt=\"", $5, "\">");
+											"<br><img src=\"", $3,
+											"\" alt=\"", $5, "\"><br>");
 								}
 	| '|'					{ 	$$ = "|"; }
 	| ','					{ 	$$ = ","; }
@@ -387,10 +396,60 @@ char* news_title(char *title) {
 						"</h3>\n");
 }
 
-char* news_paragraph(char *paragraph) {	
-	return concat(3,	"<p>",
-						paragraph,
+int count_elem() {
+	int i, cnt=0;
+	for(i=0; i<NEWS_TEXT;i++) {
+		if(news.show[i]) cnt++;
+	}
+	return cnt;
+}
+
+char* add_abstract(char *buff) {
+	return concat(4, buff,	"<p>",
+						news.element[NEWS_ABS],
 						"</p>\n");
+}
+
+char* add_author(char *buff) {
+	return concat(4, buff,	"<br><p><b>Autor: </b>",
+						news.element[NEWS_AUTHOR],
+						"</p><br>\n");
+}
+
+char* add_date(char *buff) {
+	return concat(4, buff,	"<br><p><b>Data: </b>",
+						news.element[NEWS_DATE],
+						"</p><br>\n");
+}
+
+char* add_image(char *buff) {
+	return concat(4, buff, "<img height=\"150\" src=\"",
+							news.element[NEWS_IMAGE],
+							"\">");
+}
+
+char* news_paragraph(char *paragraph) {
+	int cur = 1;
+	char *buff = "";
+	int num = count_elem();
+	int i;
+	
+	while(cur <= num) {
+		i=0;
+		while(news.show[i] != cur) i++;
+		switch(i) {
+			case NEWS_TITLE: 	break;
+			case NEWS_ABS:		buff = add_abstract(buff); break;
+			case NEWS_AUTHOR: 	buff = add_author(buff); break;
+			case NEWS_DATE:		buff = add_date(buff); break;
+			case NEWS_IMAGE: 	buff = add_image(buff); break;
+			case NEWS_SOURCE:	break;
+			//case NEWS_TEXT:		buff = add_txtsource(); break;		
+		}
+		cur++;
+	}
+	
+	return buff;
 }
 
 char* news_image(char *image) {	
