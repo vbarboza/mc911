@@ -164,29 +164,33 @@ elements: elements element
 		| element
 ;
 
-element:  T_ABSTRACT '=' string { news.element[NEWS_ABS] 	= $3; }
-		| T_AUTHOR '=' string	{ news.element[NEWS_AUTHOR] = $3; }
-		| T_DATE '=' string		{ news.element[NEWS_DATE] 	= $3; }
-		| T_IMAGE '=' string	{ news.element[NEWS_IMAGE] 	= $3; }
-		| T_SOURCE '=' string	{ enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
-									news.element[NEWS_SOURCE] = $3; }
-		| T_TEXT '='string		{ 	enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
-									news.element[NEWS_TEXT] 	= $3;
-									news.show[NEWS_TEXT] = 10;    }
-		| T_TITLE '=' string 	{ news.element[NEWS_TITLE] 	= $3; }
+element:  elem '=' string		{ 
+									if(!strcmp($1,"abstract")) 		news.element[NEWS_ABS]		= $3;
+									else if(!strcmp($1,"author")) 	news.element[NEWS_AUTHOR]	= $3;
+									else if(!strcmp($1,"date")) 		news.element[NEWS_DATE]		= $3;
+									else if(!strcmp($1,"image")) 	news.element[NEWS_IMAGE]	= $3;
+									else if(!strcmp($1,"source")){ 	enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
+																	news.element[NEWS_SOURCE] = $3; 
+																	}
+									else if(!strcmp($1,"text")){ 	enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
+																	news.element[NEWS_TEXT] 	= $3;
+																	news.show[NEWS_TEXT] = 10;    	
+																	}
+									else if(!strcmp($1,"title"))		news.element[NEWS_TITLE]	= $3;
+								}
 ;
 
 elem_list:elem_list ',' elem
 		| elem				
 ;
 		
-elem: 	  T_ABSTRACT 			{ news.show[NEWS_ABS] 		= news_or++; }
-		| T_AUTHOR 				{ news.show[NEWS_AUTHOR]	= news_or++; }
-		| T_DATE 				{ news.show[NEWS_DATE] 		= news_or++; }
-		| T_IMAGE 				{ news.show[NEWS_IMAGE] 	= news_or++; }
-		| T_SOURCE 				{ news.show[NEWS_SOURCE]	= news_or++; }
-		| T_TEXT 				{ news.show[NEWS_TEXT] 		= news_or++; }
-		| T_TITLE 				{ news.show[NEWS_TITLE] 	= news_or++; }
+elem: 	  T_ABSTRACT 			{ $$ = $1;	news.show[NEWS_ABS] 		= news_or++; }
+		| T_AUTHOR 				{ $$ = $1;	news.show[NEWS_AUTHOR]	= news_or++; }
+		| T_DATE 				{ $$ = $1;	news.show[NEWS_DATE] 		= news_or++; }
+		| T_IMAGE 				{ $$ = $1;	news.show[NEWS_IMAGE] 	= news_or++; }
+		| T_SOURCE 				{ $$ = $1;	news.show[NEWS_SOURCE]	= news_or++; }
+		| T_TEXT 				{ $$ = $1;	news.show[NEWS_TEXT] 		= news_or++; }
+		| T_TITLE 				{ $$ = $1;	news.show[NEWS_TITLE] 	= news_or++; }
 ;
 
 item_list: item_list ',' T_WORD	{ char str[] = ";";
