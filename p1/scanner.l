@@ -9,7 +9,7 @@ WHITESPACE	[ \n\r\t]+
 COMMENT	\/\/.*\n
 INDENT	\n[\:]+
 BULLET	\n[\*]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
-ENUM	\n[\#]+
+ENUM	\n[\#]+[a-zA-Z0-9\x80-\xf3| \r\t|!#$%&'()*+./:;<>?@\^_`~-]*
 ANY_CHAR .
 PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 
@@ -48,7 +48,7 @@ PUNCTUATION	[!#$%&'()*+./:;<>?@\^_`~-]|\"
 				yylval.str = str;
 				return T_WORD;}
 {BULLET}	{yylval.str = (char *) strdup(yytext); return T_BULLET;}
-{ENUM}		{return T_ENUM;}
+{ENUM}		{yylval.str = (char *) strdup(yytext); return T_ENUM;}
 "'''"		{yylval.str = "<b>"; return T_WORD; }
 "''"		{yylval.str = "<i>"; return T_WORD; }
 
