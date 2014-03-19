@@ -164,20 +164,16 @@ elements: elements element
 		| element
 ;
 
-element:  elem '=' string		{ 
-									if(!strcmp($1,"abstract")) 		news.element[NEWS_ABS]		= $3;
-									else if(!strcmp($1,"author")) 	news.element[NEWS_AUTHOR]	= $3;
-									else if(!strcmp($1,"date")) 		news.element[NEWS_DATE]		= $3;
-									else if(!strcmp($1,"image")) 	news.element[NEWS_IMAGE]	= $3;
-									else if(!strcmp($1,"source")){ 	enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
-																	news.element[NEWS_SOURCE] = $3; 
-																	}
-									else if(!strcmp($1,"text")){ 	enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
-																	news.element[NEWS_TEXT] 	= $3;
-																	news.show[NEWS_TEXT] = 10;    	
-																	}
-									else if(!strcmp($1,"title"))		news.element[NEWS_TITLE]	= $3;
-								}
+element:  T_ABSTRACT '=' string { news.element[NEWS_ABS] 	= $3; }
+		| T_AUTHOR '=' string	{ news.element[NEWS_AUTHOR] = $3; }
+		| T_DATE '=' string		{ news.element[NEWS_DATE] 	= $3; }
+		| T_IMAGE '=' string	{ news.element[NEWS_IMAGE] 	= $3; }
+		| T_SOURCE '=' string	{ enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
+									news.element[NEWS_SOURCE] = $3; }
+		| T_TEXT '='string		{ 	enum_cnt0=1;enum_cnt1=1;enum_cnt2=1;enum_cnt3=1;
+									news.element[NEWS_TEXT] 	= $3;
+									news.show[NEWS_TEXT] = 10;    }
+		| T_TITLE '=' string 	{ news.element[NEWS_TITLE] 	= $3; }
 ;
 
 elem_list:elem_list ',' elem
@@ -192,6 +188,7 @@ elem: 	  T_ABSTRACT 			{ $$ = $1;	news.show[NEWS_ABS] 		= news_or++; }
 		| T_TEXT 				{ $$ = $1;	news.show[NEWS_TEXT] 		= news_or++; }
 		| T_TITLE 				{ $$ = $1;	news.show[NEWS_TITLE] 	= news_or++; }
 ;
+
 
 item_list: item_list ',' T_WORD	{ char str[] = ";";
 		  $$ = concat(3, $1,str, $3); }
@@ -270,7 +267,7 @@ word: T_WORD				{ 	$$ = $1; }
 									case 2: sprintf(num,"%d",enum_cnt2++); break;
 									case 3: sprintf(num,"%d",enum_cnt3++); break;
 								}
-								str = concat(4,str,num,". &nbsp;",&$1[clvl-1]);
+								str = concat(4,str,num,". &nbsp;",&$1[clvl]);
 								$$ = str;
 							}
 ;
