@@ -16,11 +16,18 @@
 
 static int col = 3;
 static int cc  = 0;
+
 static struct {
 	char 	*element[7];
 	int		show[7];
 	int 	col;
 } news;
+
+
+for (i = 0; i < 7; i++) {
+	news.element[i] = 0;
+	news.show[i] = 0;
+}
 
 FILE *F;
 
@@ -120,11 +127,17 @@ news:	T_WORD '{'
 			'}'
 		'}'					
 							{
-								int size;
+								int i, size;
+
 								news.col = $8;
 								size = news.col/col*12;
-								printf("%s", news.element[NEWS_ABS]);
+
 								$$ = news_div(size);
+								
+								for (i = 0; i < 7; i++) {
+									news.element[i] = 0;
+									news.show[i] = 0;
+								}
 							}
 ;
 
@@ -132,26 +145,26 @@ elements: elements element
 		| element
 ;
 
-element:  T_ABSTRACT '=' string { news.element[NEWS_ABS] = $3; }
+element:  T_ABSTRACT '=' string { news.element[NEWS_ABS] 	= $3; }
 		| T_AUTHOR '=' string	{ news.element[NEWS_AUTHOR] = $3; }
-		| T_DATE '=' string		{ news.element[NEWS_DATE] = $3; }
-		| T_IMAGE '=' string	{ news.element[NEWS_IMAGE] = $3; }
+		| T_DATE '=' string		{ news.element[NEWS_DATE] 	= $3; }
+		| T_IMAGE '=' string	{ news.element[NEWS_IMAGE] 	= $3; }
 		| T_SOURCE '=' string	{ news.element[NEWS_SOURCE] = $3; }
-		| T_TEXT '='string		{ news.element[NEWS_TEXT] = $3; }
-		| T_TITLE '=' string 	{ news.element[NEWS_TITLE	] = $3; }
+		| T_TEXT '='string		{ news.element[NEWS_TEXT] 	= $3; }
+		| T_TITLE '=' string 	{ news.element[NEWS_TITLE] 	= $3; }
 ;
 
-elem_list:elem_list ',' elem	{ $$ = concat(3,$1,";",$3); }
-		| elem					{ $$ = $1;}
+elem_list:elem_list ',' elem
+		| elem				
 ;
 		
-elem: 	  T_ABSTRACT 			{ $$ = "ABSTRACT"; }
-		| T_AUTHOR 				{ $$ = "AUTHOR"; }
-		| T_DATE 				{ $$ = "DATE"; }
-		| T_IMAGE 				{ $$ = "IMAGE"; }
-		| T_SOURCE 				{ $$ = "SOURCE"; }
-		| T_TEXT 				{ $$ = "TEXT"; }
-		| T_TITLE 				{ $$ = "TITLE"; }
+elem: 	  T_ABSTRACT 			{ news.show[NEWS_ABS] 		= 1; }
+		| T_AUTHOR 				{ news.show[NEWS_AUTHOR]	= 1; }
+		| T_DATE 				{ news.show[NEWS_DATE] 		= 1; }
+		| T_IMAGE 				{ news.show[NEWS_IMAGE] 	= 1; }
+		| T_SOURCE 				{ news.show[NEWS_SOURCE]	= 1; }
+		| T_TEXT 				{ news.show[NEWS_TEXT] 		= 1; }
+		| T_TITLE 				{ news.show[NEWS_TITLE] 	= 1; }
 ;
 
 item_list: item_list ',' T_WORD	{ char str[] = ";";
@@ -347,11 +360,33 @@ char* html_end() {
 }
 
 char* news_div(int size) {
-	char buffer[8];
-	sprintf(buffer, "%d", size);
+	int i;
 
-	char *before_span =	"<div class=\"span";
-	char *after_span = "</div>\n";
+	char sizbuf[8];
+	sprintf(sizbuf, "%d", size);
 
-	return concat(6, before_span, buffer, ">\n<p>\n", news.element[NEWS_TITLE], "</p>\n", after_span);
+	char *buffer = 	"<div class=\"span";
+	buffer = concat(3, buffer, sizbuf, ">\n");
+
+	if(news.show[NEWS_TITLE])
+		buffer = concat(4, buffer,
+						"<h3>", news.element[NEWS_TITLE], "</h3>\n");
+
+	if(news.show[NEWS_DATE])
+		buffer = concat(4, buffer,
+						"<p>", news.element[NEWS_DATE], "</p>\n");
+
+	if(news.show[NEWS_AUTHOR])
+		buffer = concat(4, buffer,
+						"<p> Autor:", news.element[NEWS_AUTHOR], "</p>\n");
+
+	if(news.show[NEWS_IMAGE])
+		buffer = concat(4, buffer,
+						"<img src=", news.element[NEWS_IMAGE], " />\n");
+
+	if(news.show[NEWS_SOURCE])
+		buffer = concat(4, buffer,
+						"<p>", news.element[NEWS_IMAGE], "</p>\n");
+
+	return concat(2, buffer, "</div>\n");
 }
