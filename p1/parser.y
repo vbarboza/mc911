@@ -33,7 +33,11 @@ char* makenews(char *elem, char *list);
 char* html_begin();
 char* meta(char *title);
 char* header(char *title, char *date);
-char* news_div(int size);
+char* news_begin();
+char* news_title(char *title);
+char* news_paragraph(char *paragraph);
+char* news_image(char *image);
+char* news_end();
 char* html_end();
 %}
  
@@ -121,17 +125,14 @@ news:	T_WORD '{'
 			'}'
 		'}'					
 							{
-								int i, size;
+								int i;
 
-								news.col = $8;
-								size = news.col/col*12;
+								news.col = 2;
 
-								$$ = news_div(size);
-								
-								for (i = 0; i < 7; i++) {
-									
-									news.show[i] = 0;
-								}
+								$$ = concat(4, 	news_begin(),
+												news_title(news.element[NEWS_TITLE]),
+												news_paragraph(news.element[NEWS_ABS]),
+												news_end());
 							}
 ;
 
@@ -366,34 +367,55 @@ char* html_end() {
 					"</html>\n";
 }
 
-char* news_div(int size) {
-	int i;
+char* news_begin(char *title) {
+	int 	i, size;
+	char  	sizbuf[8];
+	char   *buffer;
 
-	char sizbuf[8];
+	//size = news.col/col*12;
+	size = 4;
+
+	if (cc == 0) {
+		buffer = "<div class=\"row\">";
+	}
+	else if (cc + size > 12) {
+		buffer = 	"</div>\n"
+					"<div class=\"row\">";
+		cc = 0;
+	}
+	else {
+		buffer = "";
+	}
+	cc += size;
+
 	sprintf(sizbuf, "%d", size);
 
-	char *buffer = 	"<div class=\"span";
-	buffer = concat(3, buffer, sizbuf, ">\n");
+	buffer = concat(4, 	buffer,
+						"<div class=\"span",
+						sizbuf,
+						"\">\n");
 
-	if(news.show[NEWS_TITLE])
-		buffer = concat(4, buffer,
-						"<h3>", news.element[NEWS_TITLE], "</h3>\n");
+	return buffer;
+ }
 
-	if(news.show[NEWS_DATE])
-		buffer = concat(4, buffer,
-						"<p>", news.element[NEWS_DATE], "</p>\n");
+char* news_title(char *title) {	
+	return concat(3,	"<h3>",
+						title,
+						"</h3>\n");
+}
 
-	if(news.show[NEWS_AUTHOR])
-		buffer = concat(4, buffer,
-						"<p> Autor:", news.element[NEWS_AUTHOR], "</p>\n");
+char* news_paragraph(char *paragraph) {	
+	return concat(3,	"<p>",
+						paragraph,
+						"</p>\n");
+}
 
-	if(news.show[NEWS_IMAGE])
-		buffer = concat(4, buffer,
-						"<img src=", news.element[NEWS_IMAGE], " />\n");
+char* news_image(char *image) {	
+	return concat(3,	"<img src=\"",
+						image,
+						"\" />\n");
+}
 
-	if(news.show[NEWS_SOURCE])
-		buffer = concat(4, buffer,
-						"<p>", news.element[NEWS_IMAGE], "</p>\n");
-
-	return concat(2, buffer, "</div>\n");
+char* news_end() {
+	return "</div>";
 }
