@@ -62,7 +62,7 @@ public class Codegen extends VisitorAdapter{
 		// Quem quiser usar 'env', apenas comente essa linha
 		// codeGenerator.symTab.FillTabSymbol(p);
 		
-		// Formato da String para o System.out.printlnijava "%d\n"
+		// Formato da String para o System.out./ijava "%d\n"
 		codeGenerator.assembler.add(new LlvmConstantDeclaration("@.formatting.string", "private constant [4 x i8] c\"%d\\0A\\00\""));	
 
 		// NOTA: sempre que X.accept(Y), então Y.visit(X);
@@ -158,23 +158,30 @@ public class Codegen extends VisitorAdapter{
 		return new LlvmIntegerLiteral(n.value);
 	};
 	
-	// Todos os visit's que devem ser implementados	
+	// Todos os visit's que devem ser implementados
 	public LlvmValue visit(ClassDeclSimple n){
+		// Lista de tipos
+		List<LlvmType> typeList = new ArrayList<LlvmType>();
 		
-		System.out.println("Class " + n.name);
-		
-		for (util.List<VarDecl> localVars = n.varList; localVars != null; localVars = localVars.tail) {
-			localVars.head.accept(this);
+		// Para cada elemento na lista de variáveis em n, adiciona o tipo à lista
+		for (util.List<VarDecl> attrList = n.varList; attrList != null; attrList = attrList.tail) {
+			typeList.add(attrList.head.accept(this).type);
 		}
 		
-		return null;
+		// Cria struct com tipos { i32, i32, ... }
+		LlvmStructure attrStruct = new LlvmStructure(typeList);
+				
+		// Cria declaração da classe como struct no arquivo .s
+		assembler.add(new LlvmConstantDeclaration("%class." + n.name, "type " + attrStruct));
 		
+		return null;
 	}
+	
 	public LlvmValue visit(ClassDeclExtends n){return null;}
+	
 	public LlvmValue visit(VarDecl n){
-		System.out.println("Variable " + n.name);
-		n.type.accept(this);
-		return null;		
+		System.out.println("var " + n.name.toString());
+		return n.type.accept(this);
 	}
 	
 	public LlvmValue visit(MethodDecl n){
@@ -196,18 +203,17 @@ public class Codegen extends VisitorAdapter{
 	}
 	
 	public LlvmValue visit(BooleanType n){
-		
-		return null;
-		
+		System.out.println("type " + n.toString());
+		LlvmRegister bool = new LlvmRegister(LlvmPrimitiveType.I1);
+		return bool;
 	}
 	
 	public LlvmValue visit(IntegerType n){
-		
-		System.out.println(n.toString());
-		
-		return null;
-		
+		System.out.println("type " + n.toString());
+		LlvmRegister integer = new LlvmRegister(LlvmPrimitiveType.I32);
+		return integer;
 	}
+	
 	public LlvmValue visit(IdentifierType n){return null;}
 	public LlvmValue visit(Block n){return null;}
 	public LlvmValue visit(If n){return null;}
@@ -227,7 +233,6 @@ public class Codegen extends VisitorAdapter{
 	}
 
 	public LlvmValue visit(Times n){
-	
 		LlvmValue v1 = n.lhs.accept(this);
 		LlvmValue v2 = n.rhs.accept(this);
 		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I32);
@@ -268,37 +273,37 @@ class SymTab extends VisitorAdapter{
     private ClassNode classEnv;    //aponta para a classe em uso
 
     public LlvmValue FillTabSymbol(Program n){
-	n.accept(this);
-	return null;
-}
-public LlvmValue visit(Program n){
-	n.mainClass.accept(this);
-
-	for (util.List<ClassDecl> c = n.classList; c != null; c = c.tail)
-		c.head.accept(this);
-
-	return null;
-}
-
-public LlvmValue visit(MainClass n){
-	classes.put(n.className.s, new ClassNode(n.className.s, null, null));
-	return null;
-}
-
-public LlvmValue visit(ClassDeclSimple n){
-	List<LlvmType> typeList = null;
-	// Constroi TypeList com os tipos das variáveis da Classe (vai formar a Struct da classe)
+		n.accept(this);
+		return null;
+	}
+	public LlvmValue visit(Program n){
+		n.mainClass.accept(this);
 	
-	List<LlvmValue> varList = null;
-	// Constroi VarList com as Variáveis da Classe
+		for (util.List<ClassDecl> c = n.classList; c != null; c = c.tail)
+			c.head.accept(this);
+	
+		return null;
+	}
+	
+	public LlvmValue visit(MainClass n){
+		classes.put(n.className.s, new ClassNode(n.className.s, null, null));
+		return null;
+	}
 
-	classes.put(n.name.s, new ClassNode(n.name.s, 
-										new LlvmStructure(typeList), 
-										varList)
-      			);
-    	// Percorre n.methodList visitando cada método
-	return null;
-}
+	public LlvmValue visit(ClassDeclSimple n){
+		List<LlvmType> typeList = null;
+		// Constroi TypeList com os tipos das variáveis da Classe (vai formar a Struct da classe)
+
+		List<LlvmValue> varList = null;
+		// Constroi VarList com as Variáveis da Classe
+
+		classes.put(n.name.s, new ClassNode(n.name.s,
+		new LlvmStructure(typeList),
+		varList)
+		       );
+		     // Percorre n.methodList visitando cada método
+		return null;
+	}
 
 	public LlvmValue visit(ClassDeclExtends n){return null;}
 	public LlvmValue visit(VarDecl n){return null;}
