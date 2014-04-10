@@ -1,44 +1,36 @@
 #
-# pacote v03
+# pacote v04
 # 
 # Como compilar:
-# $ make compile
+# $ make
 #
 # Como executar o compilador:
-# $ make run INPUT=test/teste.java OUTPUT=teste.s
+# $ make run
 #
 # Como gerar bytecode:
-# $ make bytecode INPUT=teste.s OUTPUT=teste.bc
+# $ make bytecode 
 #
 # Como executar o bytecode:
 # $ lli teste.bc
 #
 
 SOURCES = $(wildcard src/**/*.java)
-OBJECTS = $(addprefix obj/, $(notdir $(SOURCES:.java=.o)))
 CLASSES = $(SOURCES:.java=.class)
+current_dir = $(shell pwd)
 
-all: $(OBJECTS)
-	gcj -classpath src:lib/projeto2.jar obj/*.o -o minijava --main=main.Main -L./lib -Wl,-rpath,./lib/ -lprojeto2 -Xlinker --allow-multiple-definition 2>&1 
+all: $(CLASSES)
 
-obj/%.o : src/**/%.java
-	gcj -classpath src:lib/projeto2.jar -g -c $< -o obj/$(notdir $@)
+%.class: %.java
+	javac -classpath src:lib/projeto2.jar $<
 
+run:
+	java -classpath src:lib/projeto2.jar main/Main test/teste.java teste.s
 
-jar2so: $(CLASSES)
-	gcj -classpath src:lib/projeto2.jar -fPIC -fjni -c lib/projeto2.jar -o lib/projeto2.o
-	gcj -shared -fPIC -o lib/libprojeto2.o lib/projeto2.o  -o lib/libprojeto2.so
+bytecode:
+	llvm-as teste.s -o teste.bc
 
-%.class : %.java
-	javac -cp src:lib/projeto2.jar $<
-
-
+exec:
+	lli $(current_dir)/teste.bc
 
 clean:
 	rm -f src/llvm/*.class src/llvmast/*.class
-	rm -f src/llvm/*.o src/llvmast/*.o
-	rm -f obj/*.o
-
-
-
-

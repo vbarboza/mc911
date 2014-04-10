@@ -1,8 +1,10 @@
 *#
 *~
 *.c
-*.o
 *.h
 parser
 *.html
-*.html
+.DS_Store
+*.bc
+*.s
+*.class
