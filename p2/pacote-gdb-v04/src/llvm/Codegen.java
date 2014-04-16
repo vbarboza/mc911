@@ -197,23 +197,31 @@ public class Codegen extends VisitorAdapter{
 		System.out.println("method " + n.name.toString());
 		
 		// Listas de tipos e argumentos
-		List<LlvmType> typeList = new ArrayList<LlvmType>();
 		List<LlvmValue> argsList = new ArrayList<LlvmValue>();
 		
 
 		// Preenche listas
 		for (util.List<Formal> formalsList = n.formals; formalsList != null; formalsList = formalsList.tail) {
 			argsList.add(formalsList.head.accept(this));
-			typeList.add(formalsList.head.accept(this).type);
 		}
-		
-		// Define função
-		String name = new String(n.name.toString());
+		String name = "@__" + new String(n.name.toString());
 		LlvmType retType = n.returnType.accept(this).type;
 		assembler.add(new LlvmDefine(name, retType, argsList));
-		assembler.add(new LlvmLabel(new LlvmLabelValue("entry_"+name)));
+		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
+
+		// Preenche listas
+		LlvmRegister register;
+		LlvmInstruction alloc;
+		LlvmInstruction store;
 		
-		// Alocar os parâmetros
+		for (LlvmValue formal: argsList) {
+			 register = new LlvmRegister(formal.type);
+			 alloc = new LlvmAlloca(register, formal.type, new LinkedList<LlvmValue>());
+			 store = new LlvmStore(formal, register);
+			 assembler.add(alloc);
+			 assembler.add(store);
+		}
+		
 		// Alocar as variáveis locais
 		
 		// Fim da função
