@@ -215,7 +215,7 @@ public class Codegen extends VisitorAdapter{
 		LlvmInstruction store;
 		
 		for (LlvmValue formal: argsList) {
-			 register = new LlvmRegister(formal.type);
+			 register = new LlvmRegister(new LlvmPointer(formal.type));
 			 alloc = new LlvmAlloca(register, formal.type, new LinkedList<LlvmValue>());
 			 store = new LlvmStore(formal, register);
 			 assembler.add(alloc);
