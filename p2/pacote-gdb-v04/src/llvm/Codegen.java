@@ -120,6 +120,7 @@ public class Codegen extends VisitorAdapter{
 		LlvmValue v2 = n.rhs.accept(this);
 		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I32);
 		assembler.add(new LlvmPlus(lhs,LlvmPrimitiveType.I32,v1,v2));
+		System.out.println("Plus");
 		return lhs;
 	}
 	
@@ -196,24 +197,22 @@ public class Codegen extends VisitorAdapter{
 		
 		System.out.println("method " + n.name.toString());
 		
-		// Listas de tipos e argumentos
+		// Lista argumentos
 		List<LlvmValue> argsList = new ArrayList<LlvmValue>();
-		
-
-		// Preenche listas
 		for (util.List<Formal> formalsList = n.formals; formalsList != null; formalsList = formalsList.tail) {
 			argsList.add(formalsList.head.accept(this));
 		}
+		
+		// Declara método
 		String name = "@__" + new String(n.name.toString());
 		LlvmType retType = n.returnType.accept(this).type;
 		assembler.add(new LlvmDefine(name, retType, argsList));
 		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
 
-		// Preenche listas
+		// Aloca e guarda parametros
 		LlvmRegister register;
 		LlvmInstruction alloc;
-		LlvmInstruction store;
-		
+		LlvmInstruction store;		
 		for (LlvmValue formal: argsList) {
 			 register = new LlvmRegister(new LlvmPointer(formal.type));
 			 alloc = new LlvmAlloca(register, formal.type, new LinkedList<LlvmValue>());
@@ -222,7 +221,23 @@ public class Codegen extends VisitorAdapter{
 			 assembler.add(store);
 		}
 		
-		// Alocar as variáveis locais
+		// Lista variaveis locais
+		List<LlvmValue> varsList = new ArrayList<LlvmValue>();
+		for (util.List<VarDecl> declList = n.locals; declList != null; declList = declList.tail) {
+			varsList.add(declList.head.accept(this));
+		}
+		
+		// Aloca variaveis locais		
+		for (LlvmValue var: varsList) {
+			 register = new LlvmRegister(new LlvmPointer(var.type));
+			 alloc = new LlvmAlloca(register, var.type, new LinkedList<LlvmValue>());
+			 assembler.add(alloc);
+		}
+		
+		// Aloca variaveis locais
+		for (util.List<Statement> stmList = n.body; stmList != null; stmList = stmList.tail) {
+			stmList.head.accept(this);
+		}
 		
 		// Fim da função
 		assembler.add(new LlvmCloseDefinition());
@@ -253,11 +268,20 @@ public class Codegen extends VisitorAdapter{
 		return integer;
 	}
 	
-	public LlvmValue visit(IdentifierType n){return null;}
-	public LlvmValue visit(Block n){return null;}
+	public LlvmValue visit(IdentifierType n){
+		System.out.println("Identifier");
+		return null;
+	}
+	public LlvmValue visit(Block n){
+		System.out.println("Block");
+		return null;
+	}
 	public LlvmValue visit(If n){return null;}
 	public LlvmValue visit(While n){return null;}
-	public LlvmValue visit(Assign n){return null;}
+	public LlvmValue visit(Assign n){
+		System.out.println("Assign");
+		return null;
+	}
 	public LlvmValue visit(ArrayAssign n){return null;}
 	public LlvmValue visit(And n){return null;}
 	public LlvmValue visit(LessThan n){return null;}
