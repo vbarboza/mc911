@@ -174,6 +174,14 @@ public class Codegen extends VisitorAdapter{
 		// Cria declaração da classe como struct no arquivo .s
 		assembler.add(new LlvmConstantDeclaration("%class." + n.name, "type " + attrStruct));
 		
+		// Lista de métodos
+		List<LlvmType> defList = new ArrayList<LlvmType>();
+		
+		// Para cada método
+		for (util.List<MethodDecl> methodList = n.methodList; methodList != null; methodList = methodList.tail) {
+			defList.add(methodList.head.accept(this).type);
+		}
+		
 		return null;
 	}
 	
@@ -186,14 +194,37 @@ public class Codegen extends VisitorAdapter{
 	
 	public LlvmValue visit(MethodDecl n){
 		
-		return null;
+		System.out.println("method " + n.name.toString());
 		
+		// Listas de tipos e argumentos
+		List<LlvmType> typeList = new ArrayList<LlvmType>();
+		List<LlvmValue> argsList = new ArrayList<LlvmValue>();
+		
+
+		// Preenche listas
+		for (util.List<Formal> formalsList = n.formals; formalsList != null; formalsList = formalsList.tail) {
+			argsList.add(formalsList.head.accept(this));
+			typeList.add(formalsList.head.accept(this).type);
+		}
+		
+		// Define função
+		String name = new String(n.name.toString());
+		LlvmType retType = n.returnType.accept(this).type;
+		assembler.add(new LlvmDefine(name, retType, argsList));
+		assembler.add(new LlvmLabel(new LlvmLabelValue("entry_"+name)));
+		
+		// Alocar os parâmetros
+		// Alocar as variáveis locais
+		
+		// Fim da função
+		assembler.add(new LlvmCloseDefinition());
+		
+		return n.returnType.accept(this);
 	}
 	
 	public LlvmValue visit(Formal n){
-		
-		return null;
-		
+		System.out.println("formal " + n.name.toString());
+		return n.type.accept(this);
 	}
 	
 	public LlvmValue visit(IntArrayType n){

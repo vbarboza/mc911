@@ -5,5 +5,13 @@ class a
     	System.out.println(1-2);
     }
 }
-
+class b
+{
+	int x;
+	int y;
+	public int soma(int a, int b)
+	{
+		return a+b;
+	}
+}
 
