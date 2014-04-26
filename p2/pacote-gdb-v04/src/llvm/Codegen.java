@@ -200,8 +200,29 @@ public class Codegen extends VisitorAdapter{
 		LlvmType retType = methodEnv.methodType;
 		assembler.add(new LlvmDefine(name, retType, methodEnv.formalsList));
 		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
-
-
+		
+		//Corpo do método
+		//aloca parametros do método
+		for(LlvmValue v:methodEnv.formalsList){
+			LlvmNamedValue lhs = new LlvmNamedValue(v.toString()+".temp",v.type);
+			assembler.add(new LlvmAlloca(lhs,v.type,new LinkedList<LlvmValue>()));
+			lhs = new LlvmNamedValue(v.toString()+".temp",new LlvmPointer(v.type));
+			assembler.add(new LlvmStore(new LlvmNamedValue(v.toString(),v.type),lhs));
+		}
+		//aloca variaveis declaradas
+		for(LlvmValue v:methodEnv.localsList) {
+			//alocas
+			LlvmNamedValue lhs = new LlvmNamedValue(v.toString()+".temp",v.type);
+			assembler.add(new LlvmAlloca(lhs,v.type, new LinkedList<LlvmValue>()));
+		}
+		//statements
+		for(util.List<Statement> s = n.body; s != null; s = s.tail) {
+			s.head.accept(this);
+		}
+		// retorno
+        assembler.add(new LlvmRet(n.returnExp.accept(this)));
+        
+        //fechar método
 		assembler.add(new LlvmCloseDefinition());
 		
 		return n.returnType.accept(this);
@@ -242,6 +263,10 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(While n){return null;}
 	public LlvmValue visit(Assign n){
 		System.out.println("Assign");
+		LlvmValue tmp = n.var.accept(this);
+		LlvmValue lhs = new LlvmNamedValue(tmp.toString()+".temp", new LlvmPointer(tmp.type));
+		LlvmValue rhs = n.exp.accept(this);
+		assembler.add(new LlvmStore(rhs, lhs));
 		return null;
 	}
 	public LlvmValue visit(ArrayAssign n){return null;}
@@ -270,7 +295,15 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(Call n){return null;}
 	public LlvmValue visit(True n){return null;}
 	public LlvmValue visit(False n){return null;}
-	public LlvmValue visit(IdentifierExp n){return null;}
+	
+	public LlvmValue visit(IdentifierExp n){
+		LlvmValue addr = n.name.accept (this);
+        LlvmRegister temp = new LlvmRegister (addr.type);
+
+        assembler.add (new LlvmLoad (temp, new LlvmNamedValue (addr + ".temp", new LlvmPointer (addr.type))));
+        return temp;
+	}
+	
 	public LlvmValue visit(This n){return null;}
 	public LlvmValue visit(NewArray n){return null;}
 	public LlvmValue visit(NewObject n){return null;}
@@ -282,7 +315,10 @@ public class Codegen extends VisitorAdapter{
 		return lhs;
 	}
 	
-	public LlvmValue visit(Identifier n){return null;}
+	public LlvmValue visit(Identifier n){
+		LlvmValue var = methodEnv.varMap.get(n.s);
+		return new LlvmNamedValue(var.toString(), var.type);
+	}
 }
 
 
@@ -380,12 +416,12 @@ class SymTab extends VisitorAdapter{
 	
 	public LlvmValue visit(VarDecl n){
 		System.out.println("var " + n.name.toString());
-		return n.type.accept(this);
+		return new LlvmNamedValue("%"+n.name.s, (n.type.accept(this)).type);
 	}
 	
 	public LlvmValue visit(Formal n){
 		System.out.println("formal " + n.name.toString());
-		return n.type.accept(this);
+		return new LlvmNamedValue("%"+n.name.s, n.type.accept(this).type);
 	}
 	
 	public LlvmValue visit(BooleanType n){
