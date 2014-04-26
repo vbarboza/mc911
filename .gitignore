@@ -6,5 +6,4 @@ parser
 *.html
 .DS_Store
 *.bc
-*.s
 *.class
