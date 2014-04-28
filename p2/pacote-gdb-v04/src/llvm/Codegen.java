@@ -190,7 +190,7 @@ public class Codegen extends VisitorAdapter{
 		return n.type.accept(this);
 	}
 	
-	public LlvmValue visit(MethodDecl n){			
+	public LlvmValue visit(MethodDecl n){
 		// Busca metodo na AST
 		methodEnv = classEnv.methMap.get(n.name.s);
 
@@ -210,6 +210,18 @@ public class Codegen extends VisitorAdapter{
 			lhs = new LlvmNamedValue(v.toString()+".temp",new LlvmPointer(v.type));
 			assembler.add(new LlvmStore(new LlvmNamedValue(v.toString(),v.type),lhs));
 		}
+		//aloca e torna disponiveis variaveis da classe
+		int i=0;
+		for(LlvmValue v: classEnv.varMap.values()){
+			//get element pointer
+			LlvmNamedValue lhs = new LlvmNamedValue(v.toString()+".temp",new LlvmPointer(v.type));
+			LlvmNamedValue src = new LlvmNamedValue("%this",new LlvmPointer(new LlvmTypeClass(classEnv.className)));
+			LinkedList<LlvmValue> offsets = new LinkedList<LlvmValue>();
+			offsets.add(new LlvmNamedValue(Integer.toString(0),LlvmPrimitiveType.I32));
+			offsets.add(new LlvmNamedValue(Integer.toString(i++),LlvmPrimitiveType.I32));
+			assembler.add(new LlvmGetElementPointer(lhs,src, offsets));
+		}
+		
 		//aloca variaveis declaradas
 		for(LlvmValue v:methodEnv.localsList) {
 			//alocas
@@ -336,7 +348,10 @@ public class Codegen extends VisitorAdapter{
         return temp;
 	}
 	
-	public LlvmValue visit(This n){return null;}
+	public LlvmValue visit(This n){
+		System.out.println("This!");
+		return null;
+	}
 	public LlvmValue visit(NewArray n){return null;}
 	public LlvmValue visit(NewObject n){
 		System.out.println("new! "+n.className.s);
@@ -355,6 +370,9 @@ public class Codegen extends VisitorAdapter{
 	
 	public LlvmValue visit(Identifier n){
 		LlvmValue var = methodEnv.varMap.get(n.s);
+		if(var == null) {
+			var = classEnv.varMap.get(n.s);
+		}
 		return new LlvmNamedValue(var.toString(), var.type);
 	}
 }
@@ -436,11 +454,12 @@ class SymTab extends VisitorAdapter{
 		LlvmNamedValue classref = new LlvmNamedValue("%this",new LlvmPointer(new LlvmTypeClass(classEnv.className)));
 		argsList.add(classref);
 		varMap.put(classref.name, classref);
-
+		//demais argumentos
 		for (util.List<Formal> formalsList = n.formals; formalsList != null; formalsList = formalsList.tail) {
 			argsList.add(formalsList.head.accept(this));
 			varMap.put(formalsList.head.name.s, formalsList.head.accept(this));
 		}
+		//agora variaveis locais do metodo
 		for (util.List<VarDecl> declList = n.locals; declList != null; declList = declList.tail) {
 			varsList.add(declList.head.accept(this));
 			varMap.put(declList.head.name.s, declList.head.accept(this));
