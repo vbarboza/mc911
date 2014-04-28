@@ -212,7 +212,7 @@ public class Codegen extends VisitorAdapter{
 		}
 		//aloca e torna disponiveis variaveis da classe
 		int i=0;
-		for(LlvmValue v: classEnv.varMap.values()){
+		for(LlvmValue v: classEnv.varList){
 			//get element pointer
 			LlvmNamedValue lhs = new LlvmNamedValue(v.toString()+".temp",new LlvmPointer(v.type));
 			LlvmNamedValue src = new LlvmNamedValue("%this",new LlvmPointer(new LlvmTypeClass(classEnv.className)));
@@ -247,9 +247,7 @@ public class Codegen extends VisitorAdapter{
 	}
 	
 	public LlvmValue visit(IntArrayType n){
-		
 		return null;
-		
 	}
 	
 	public LlvmValue visit(BooleanType n){
@@ -279,7 +277,16 @@ public class Codegen extends VisitorAdapter{
 		LlvmValue tmp = n.var.accept(this);
 		LlvmValue lhs = new LlvmNamedValue(tmp.toString()+".temp", new LlvmPointer(tmp.type));
 		LlvmValue rhs = n.exp.accept(this);
-		assembler.add(new LlvmStore(rhs, lhs));
+		
+		if( new LlvmPointer(rhs.type).toString().equals(lhs.type.toString())) {
+			assembler.add(new LlvmStore(rhs, lhs));
+		}
+		else {
+			LlvmValue aux = lhs;
+			lhs = new LlvmRegister(new LlvmPointer(rhs.type));
+			assembler.add(new LlvmBitcast(lhs, aux, lhs.type));
+			assembler.add(new LlvmStore(rhs, lhs));
+		}
 		return null;
 	}
 	public LlvmValue visit(ArrayAssign n){return null;}
@@ -352,7 +359,14 @@ public class Codegen extends VisitorAdapter{
 		System.out.println("This!");
 		return null;
 	}
-	public LlvmValue visit(NewArray n){return null;}
+	public LlvmValue visit(NewArray n){
+		//alloca
+		LlvmValue lhs = new LlvmRegister(new LlvmArray(Integer.parseInt(n.size.accept(this).toString()),LlvmPrimitiveType.I32));
+		assembler.add(new LlvmAlloca(lhs,lhs.type,new LinkedList<LlvmValue>()));
+		lhs.type = new LlvmPointer(lhs.type);
+		return lhs;
+		
+	}
 	public LlvmValue visit(NewObject n){
 		System.out.println("new! "+n.className.s);
 		LlvmRegister lhs = new LlvmRegister(new LlvmPointer(symTab.classes.get(n.className.s).type));
@@ -403,7 +417,7 @@ class SymTab extends VisitorAdapter{
 	}
 	
 	public LlvmValue visit(MainClass n){
-		classes.put(n.className.s, new ClassNode(n.className.s, null, null));
+		classes.put(n.className.s, new ClassNode(n.className.s, null, null,null));
 		return null;
 	}
 
@@ -411,6 +425,7 @@ class SymTab extends VisitorAdapter{
 		// Lista de tipos
 		List<LlvmType> typeList       = new ArrayList<LlvmType>();
 		Map<String, LlvmValue> varMap = new HashMap<String, LlvmValue>();
+		LinkedList<LlvmValue> varList = new LinkedList<LlvmValue>();
 				
 		// Para cada elemento na lista de variáveis em n, adiciona o tipo à lista
 		for (util.List<VarDecl> attrList = n.varList; attrList != null; attrList = attrList.tail) {
@@ -420,13 +435,14 @@ class SymTab extends VisitorAdapter{
 		// Para cada elemento na lista de variáveis em n, adiciona o registrados ao mapa
 		for (util.List<VarDecl> attrList = n.varList; attrList != null; attrList = attrList.tail) {
 			varMap.put(attrList.head.name.s, attrList.head.accept(this));
+			varList.add(attrList.head.accept(this));
 		}
 
 		// Cria struct com tipos { i32, i32, ... }
 		LlvmStructure attrStruct = new LlvmStructure(typeList);
 		
 		// Cria ClassNode com classe atual
-		classEnv = new ClassNode(n.name.s, attrStruct, varMap);
+		classEnv = new ClassNode(n.name.s, attrStruct, varMap,varList);
 		
 		// Insere na symTab
 		classes.put(n.name.s, classEnv);
@@ -497,8 +513,12 @@ class SymTab extends VisitorAdapter{
 		return integer;
 	}
 	
-	public LlvmValue visit(IntArrayType n){return null;}
-	public LlvmValue visit(IdentifierType n){ return null;}
+	public LlvmValue visit(IntArrayType n){
+		return new LlvmRegister(new LlvmPointer(new LlvmArray(0,LlvmPrimitiveType.I32)));
+	}
+	public LlvmValue visit(IdentifierType n){
+		return new LlvmNamedValue(n.name,new LlvmTypeClass(n.name));
+	}
 }
 
 class ClassNode extends LlvmType {
@@ -506,12 +526,14 @@ class ClassNode extends LlvmType {
 	public LlvmStructure classType;
 	public LlvmTypeClass type;
 	public Map<String, LlvmValue> varMap;
+	public LinkedList<LlvmValue> varList;
 	public Map<String, MethodNode> methMap;
 
-	ClassNode (String nameClass, LlvmStructure classType, Map<String, LlvmValue> varMap){
+	ClassNode (String nameClass, LlvmStructure classType, Map<String, LlvmValue> varMap,LinkedList<LlvmValue> varList){
 		this.className = nameClass;
 		this.classType = classType;
 		this.varMap    = varMap;
+		this.varList   = varList;
 		this.methMap   = new HashMap<String, MethodNode>();
 		this.type	   = new LlvmTypeClass(nameClass);
 	}

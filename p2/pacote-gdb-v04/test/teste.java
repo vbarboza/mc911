@@ -9,9 +9,20 @@ class B
 {
 	int x;
 	int y;
+	C teste;
 	public int soma()
 	{
-		x=10;
+		teste = new C();
+		x= teste.aoooba();
+		return x;
+	}
+}
+
+class C
+{
+	int x;
+	public int aoooba() {
+		x = 10;
 		return x;
 	}
 }
