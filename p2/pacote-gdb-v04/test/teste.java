@@ -1,13 +1,11 @@
-class a
+class A
 {
     public static void main(String[] args)
     {
-    	int a;
-    	a = new b.soma(1,2);
-    	System.out.println(a));
+    	System.out.println(new B().soma(1,2));
     }
 }
-class b
+class B
 {
 	int x;
 	int y;
@@ -18,4 +16,3 @@ class b
 		return s;
 	}
 }
-

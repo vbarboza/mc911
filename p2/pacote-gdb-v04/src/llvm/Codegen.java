@@ -62,7 +62,8 @@ public class Codegen extends VisitorAdapter{
 		// Preenchendo a Tabela de Símbolos
 		// Quem quiser usar 'env', apenas comente essa linha
 		codeGenerator.symTab.FillTabSymbol(p);
-		
+		//reseta contador de registrador
+		LlvmRegister.rewind();
 		// Formato da String para o System.out./ijava "%d\n"
 		codeGenerator.assembler.add(new LlvmConstantDeclaration("@.formatting.string", "private constant [4 x i8] c\"%d\\0A\\00\""));	
 
@@ -145,7 +146,7 @@ public class Codegen extends VisitorAdapter{
 		pts = new LinkedList<LlvmType>();
 		pts.add(new LlvmPointer(LlvmPrimitiveType.I8));
 		pts.add(LlvmPrimitiveType.DOTDOTDOT);
-		
+
 		// printf:
 		assembler.add(new LlvmCall(new LlvmRegister(LlvmPrimitiveType.I32),
 				LlvmPrimitiveType.I32,
@@ -192,7 +193,7 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(MethodDecl n){			
 		// Busca metodo na AST
 		methodEnv = classEnv.methMap.get(n.name.s);
-		
+
 		System.out.println("method " + methodEnv.methodName);
 		
 		// Declara método
@@ -292,7 +293,38 @@ public class Codegen extends VisitorAdapter{
 	
 	public LlvmValue visit(ArrayLookup n){return null;}
 	public LlvmValue visit(ArrayLength n){return null;}
-	public LlvmValue visit(Call n){return null;}
+	
+	public LlvmValue visit(Call n){
+		
+		System.out.println("call!");
+		//pega argumentos da funcao
+		List<LlvmValue> args = new LinkedList<LlvmValue>();
+		List<LlvmType> argtys = new LinkedList<LlvmType>();
+		//primeiro argumento é o proprio objeto
+		LlvmValue obj = n.object.accept(this);
+		args.add(obj);
+		//demais argumentos
+		for(util.List<Exp> v = n.actuals;v != null;v = v.tail) {
+			args.add(v.head.accept(this));
+		}
+		//busca na symTab o metodo, tipo, etc
+		ClassNode class_meth = symTab.classes.get(obj.type.getName());
+		MethodNode symtab_meth = class_meth.methMap.get(n.method.s);
+		for(LlvmValue v : symtab_meth.formalsList){
+			argtys.add(v.type);
+		}
+		
+		LlvmRegister lhs = new LlvmRegister(symtab_meth.methodType);
+		assembler.add(new LlvmCall(lhs,
+				symtab_meth.methodType,
+				argtys,				 
+				"@__"+symtab_meth.methodName+"_"+class_meth.className,
+				args
+				));
+		return lhs;
+		
+	}
+	
 	public LlvmValue visit(True n){return null;}
 	public LlvmValue visit(False n){return null;}
 	
@@ -306,7 +338,13 @@ public class Codegen extends VisitorAdapter{
 	
 	public LlvmValue visit(This n){return null;}
 	public LlvmValue visit(NewArray n){return null;}
-	public LlvmValue visit(NewObject n){return null;}
+	public LlvmValue visit(NewObject n){
+		System.out.println("new! "+n.className.s);
+		LlvmRegister lhs = new LlvmRegister(new LlvmPointer(symTab.classes.get(n.className.s).type));
+		assembler.add(new LlvmAlloca(lhs,symTab.classes.get(n.className.s).type,new LinkedList<LlvmValue>()));
+		return lhs;
+		
+	}
 	
 	public LlvmValue visit(Not n){
 		LlvmValue v = n.exp.accept(this);
@@ -394,7 +432,11 @@ class SymTab extends VisitorAdapter{
 		List<LlvmValue> varsList = new ArrayList<LlvmValue>();
 		Map<String, LlvmValue> varMap = new HashMap<String, LlvmValue>();
 		
-		
+		//primeiro argumento é a própria classe
+		LlvmNamedValue classref = new LlvmNamedValue("%this",new LlvmPointer(new LlvmTypeClass(classEnv.className)));
+		argsList.add(classref);
+		varMap.put(classref.name, classref);
+
 		for (util.List<Formal> formalsList = n.formals; formalsList != null; formalsList = formalsList.tail) {
 			argsList.add(formalsList.head.accept(this));
 			varMap.put(formalsList.head.name.s, formalsList.head.accept(this));
@@ -443,6 +485,7 @@ class SymTab extends VisitorAdapter{
 class ClassNode extends LlvmType {
 	public String className;
 	public LlvmStructure classType;
+	public LlvmTypeClass type;
 	public Map<String, LlvmValue> varMap;
 	public Map<String, MethodNode> methMap;
 
@@ -451,6 +494,7 @@ class ClassNode extends LlvmType {
 		this.classType = classType;
 		this.varMap    = varMap;
 		this.methMap   = new HashMap<String, MethodNode>();
+		this.type	   = new LlvmTypeClass(nameClass);
 	}
 }
 
