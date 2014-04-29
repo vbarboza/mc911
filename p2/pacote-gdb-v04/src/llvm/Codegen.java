@@ -170,8 +170,7 @@ public class Codegen extends VisitorAdapter{
 		System.out.println("class " + classEnv.className);
 		
 		// Cria declaração da classe como struct no arquivo .s
-		assembler.add(new LlvmConstantDeclaration("%class." + classEnv.className, "type " + classEnv.classType));
-		
+		assembler.add(0,new LlvmConstantDeclaration("%class." + classEnv.className, "type " + classEnv.classType));
 		// Lista de métodos
 		List<LlvmType> defList = new ArrayList<LlvmType>();
 		
@@ -321,6 +320,7 @@ public class Codegen extends VisitorAdapter{
 		List<LlvmType> argtys = new LinkedList<LlvmType>();
 		//primeiro argumento é o proprio objeto
 		LlvmValue obj = n.object.accept(this);
+		System.out.println("Objeto:"+obj.toString());
 		args.add(obj);
 		//demais argumentos
 		for(util.List<Exp> v = n.actuals;v != null;v = v.tail) {
@@ -349,8 +349,12 @@ public class Codegen extends VisitorAdapter{
 	
 	public LlvmValue visit(IdentifierExp n){
 		LlvmValue addr = n.name.accept (this);
+		try{
+			if(addr.type.toString().substring(0,7).equals("%class.")) {
+				return new LlvmNamedValue(addr+".temp",new LlvmPointer(addr.type));
+			}
+		} catch(StringIndexOutOfBoundsException e) {  } 
         LlvmRegister temp = new LlvmRegister (addr.type);
-
         assembler.add (new LlvmLoad (temp, new LlvmNamedValue (addr + ".temp", new LlvmPointer (addr.type))));
         return temp;
 	}
