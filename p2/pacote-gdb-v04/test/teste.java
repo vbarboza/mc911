@@ -7,22 +7,12 @@ class A
 }
 class B
 {
-	int x;
+	int [] x;
 	int y;
-	C teste;
 	public int soma()
 	{
-		teste = new C();
-		x= teste.aoooba();
-		return x;
-	}
-}
-
-class C
-{
-	int x;
-	public int aoooba() {
-		x = 10;
-		return x;
+		x = new int [10];
+		x[0]=10;
+		return x[0];
 	}
 }

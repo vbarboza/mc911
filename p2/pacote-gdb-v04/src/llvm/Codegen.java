@@ -288,7 +288,24 @@ public class Codegen extends VisitorAdapter{
 		}
 		return null;
 	}
-	public LlvmValue visit(ArrayAssign n){return null;}
+	public LlvmValue visit(ArrayAssign n){
+		  LlvmValue ptrToArrayBase = n.var.accept (this);
+		  
+	      LlvmValue arrayBase = new LlvmRegister (new LlvmPointer (((LlvmPointer)(ptrToArrayBase.type)).content));
+	 
+	      assembler.add (new LlvmLoad (arrayBase, new LlvmNamedValue (ptrToArrayBase.toString () + ".temp",
+	                                                                  new LlvmPointer (arrayBase.type))));
+	 
+	      LlvmRegister elementPtr = new LlvmRegister( new LlvmPointer(((LlvmArray) ((LlvmPointer) arrayBase.type).content).content));
+	      List<LlvmValue> offsets = new LinkedList<LlvmValue> ();
+	      offsets.add(new LlvmIntegerLiteral(0));
+	      offsets.add (n.index.accept (this));
+	 
+	      assembler.add (new LlvmGetElementPointer (elementPtr, arrayBase, offsets));
+	      
+	      assembler.add (new LlvmStore (n.value.accept (this), elementPtr));
+	      return null;
+	}
 	public LlvmValue visit(And n){return null;}
 	public LlvmValue visit(LessThan n){return null;}
 	public LlvmValue visit(Equal n){return null;}
@@ -309,7 +326,20 @@ public class Codegen extends VisitorAdapter{
 		return lhs;
 	}
 	
-	public LlvmValue visit(ArrayLookup n){return null;}
+	public LlvmValue visit(ArrayLookup n){
+		LlvmValue arrayBase = n.array.accept (this);
+		 
+	      LlvmRegister elementPtr = new LlvmRegister (new LlvmPointer(((LlvmArray)((LlvmPointer)arrayBase.type).content).content));
+	      List<LlvmValue> offsets = new LinkedList<LlvmValue> ();
+	      offsets.add(new LlvmIntegerLiteral(0));
+	      offsets.add (n.index.accept (this));
+	 
+	      assembler.add (new LlvmGetElementPointer (elementPtr, arrayBase, offsets));
+	 
+	      LlvmRegister lhs = new LlvmRegister(((LlvmArray)((LlvmPointer)(arrayBase.type)).content).content);
+	      assembler.add (new LlvmLoad (lhs, elementPtr));
+	      return lhs;
+	}
 	public LlvmValue visit(ArrayLength n){return null;}
 	
 	public LlvmValue visit(Call n){
