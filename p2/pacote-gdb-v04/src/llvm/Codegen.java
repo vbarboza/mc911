@@ -482,16 +482,18 @@ public class Codegen extends VisitorAdapter{
 	}
 	public LlvmValue visit(NewArray n){
 		//alloca
-		LlvmValue lhs = new LlvmRegister(new LlvmArray(Integer.parseInt(n.size.accept(this).toString()),LlvmPrimitiveType.I32));
-		assembler.add(new LlvmAlloca(lhs,lhs.type,new LinkedList<LlvmValue>()));
-		lhs.type = new LlvmPointer(lhs.type);
+		LlvmValue lhs = new LlvmRegister(new LlvmArray(0,LlvmPrimitiveType.I32));
+		//assembler.add(new LlvmAlloca(lhs,lhs.type,new LinkedList<LlvmValue>()));
+		assembler.add(new LlvmMalloc(lhs,LlvmPrimitiveType.I32,n.size.accept(this)));
+		lhs.type = new LlvmPointer(LlvmPrimitiveType.I32);
 		return lhs;
 		
 	}
 	public LlvmValue visit(NewObject n){
 		System.out.println("new! "+n.className.s);
 		LlvmRegister lhs = new LlvmRegister(new LlvmPointer(symTab.classes.get(n.className.s).type));
-		assembler.add(new LlvmAlloca(lhs,symTab.classes.get(n.className.s).type,new LinkedList<LlvmValue>()));
+		//assembler.add(new LlvmAlloca(lhs,symTab.classes.get(n.className.s).type,new LinkedList<LlvmValue>()));
+		assembler.add(new LlvmMalloc(lhs,lhs.type,"%class."+n.className.s));
 		return lhs;
 		
 	}
@@ -545,19 +547,26 @@ class SymTab extends VisitorAdapter{
 	public LlvmValue visit(ClassDeclSimple n){
 		// Lista de tipos
 		List<LlvmType> typeList       = new ArrayList<LlvmType>();
+		LlvmValue check;
 		Map<String, LlvmValue> varMap = new HashMap<String, LlvmValue>();
 		LinkedList<LlvmValue> varList = new LinkedList<LlvmValue>();
 				
 		// Para cada elemento na lista de variáveis em n, adiciona o tipo à lista
 		for (util.List<VarDecl> attrList = n.varList; attrList != null; attrList = attrList.tail) {
-			typeList.add(attrList.head.accept(this).type);
+			check = attrList.head.accept(this);
+			if(check.type.toString().contains("%class.")) {
+				check.type = new LlvmPointer(check.type);
+			}
+			typeList.add(check.type);
+			varMap.put(attrList.head.name.s, check);
+			varList.add(check);
 		}
 		
 		// Para cada elemento na lista de variáveis em n, adiciona o registrados ao mapa
-		for (util.List<VarDecl> attrList = n.varList; attrList != null; attrList = attrList.tail) {
-			varMap.put(attrList.head.name.s, attrList.head.accept(this));
-			varList.add(attrList.head.accept(this));
-		}
+		//for (util.List<VarDecl> attrList = n.varList; attrList != null; attrList = attrList.tail) {
+			//varMap.put(attrList.head.name.s, attrList.head.accept(this));
+			//varList.add(attrList.head.accept(this));
+		//}
 
 		// Cria struct com tipos { i32, i32, ... }
 		LlvmStructure attrStruct = new LlvmStructure(typeList);
