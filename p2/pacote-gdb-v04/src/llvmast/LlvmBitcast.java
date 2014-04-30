@@ -1,5 +1,4 @@
 package llvmast;
-import  java.util.*;
 public class LlvmBitcast extends LlvmInstruction{
     public LlvmValue lhs;
     public LlvmValue source;

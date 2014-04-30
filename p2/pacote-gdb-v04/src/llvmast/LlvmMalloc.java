@@ -1,14 +1,13 @@
 package llvmast;
-import java.util.*;
 public  class LlvmMalloc extends LlvmInstruction{
     public LlvmValue lhs;
     public LlvmType type;
     public LlvmValue nElements;
     
-    // Armazena o tamanho do último objeto. 
-    // Útil para pegar o Lenght do vetor 
+    // Armazena o tamanho do ��ltimo objeto. 
+    // ��til para pegar o Lenght do vetor 
     public static LlvmValue lastArraySize = null;
-
+    public static LlvmValue lastArraySizeReg = null;
     
     private int size; 
     private LlvmRegister lhsTimes;
@@ -19,7 +18,7 @@ public  class LlvmMalloc extends LlvmInstruction{
 	/**
 	 * 
 	 * Construtor Malloc: recebe apenas o tamanho em bytes que se deseja alocar
-	 * Cabe a você calcular qual será esse tamanho
+	 * Cabe a voc�� calcular qual ser�� esse tamanho
 	 * 
 	 * @param lhs
 	 * @param size
@@ -64,7 +63,7 @@ public  class LlvmMalloc extends LlvmInstruction{
 	
 	
 	/**
-	 *  Implementação
+	 *  Implementa����o
 	 *  
 	 */
 	private void MallocImpl(LlvmValue lhs, LlvmType type, LlvmValue nElements, String className){
@@ -72,7 +71,7 @@ public  class LlvmMalloc extends LlvmInstruction{
 		this.type = type;
 		this.nElements = nElements;
 		this.size = 0;
-		this.lastArraySize = null;
+		LlvmMalloc.lastArraySize = null;
 		
 		// calculando o tamanho do malloc (em Bytes)
 		if ( type instanceof LlvmStructure ){
@@ -81,18 +80,21 @@ public  class LlvmMalloc extends LlvmInstruction{
 			this.nElements = null;
 			if ( type == LlvmPrimitiveType.I32 ){
 				size = 4;
-				this.lastArraySize = nElements;
+				LlvmMalloc.lastArraySize = nElements;
 			} else { 
-				// Se é um bool
+				// Se �� um bool
 				size = 1;
 			}
 		}		
 		
 		lhsTimes = new LlvmRegister(LlvmPrimitiveType.I32);
+		LlvmRegister lhsPlus = new LlvmRegister(LlvmPrimitiveType.I32);
+		LlvmMalloc.lastArraySizeReg = nElements;
 		lhsCall = new  LlvmRegister(LlvmPrimitiveType.I8);
-
-		times = new String("  " + lhsTimes + " = mul i32 " + size + ", " + nElements + "\n");
-		call = new String("  " + lhsCall + " = call i8* @malloc ( i32 "+ lhsTimes + ")\n");
+		
+		times = new String("  " + lhsTimes + " = mul i32 " + size + ", " + nElements + "\n"+
+						   "  " + lhsPlus  + " = add i32 " + size + ", " + lhsTimes + "\n");
+		call = new String("  " + lhsCall + " = call i8* @malloc ( i32 "+ lhsPlus + ")\n");
 		if (className == null)
 			bitcast = new String("  " + lhs + " = bitcast i8* " + lhsCall + " to " + type + "*");
 		else
@@ -100,7 +102,8 @@ public  class LlvmMalloc extends LlvmInstruction{
 	}    
 	
     public String toString(){
-	return times + call  + bitcast;
+    	if(times == null) return call + bitcast;
+    	return times + call  + bitcast;
     }
 }
 	

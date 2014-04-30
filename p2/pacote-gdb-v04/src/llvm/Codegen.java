@@ -300,7 +300,9 @@ public class Codegen extends VisitorAdapter{
 		
 		// false
 		assembler.add(new LlvmLabel(labelFalse));
-		n.elseClause.accept(this);
+		if(n.elseClause != null) {
+			n.elseClause.accept(this);
+		}
 		assembler.add(new LlvmBranch(labelAlways));
 		
 		assembler.add(new LlvmLabel(labelAlways));
@@ -339,10 +341,9 @@ public class Codegen extends VisitorAdapter{
 			assembler.add(new LlvmStore(rhs, lhs));
 		}
 		else {
-			LlvmValue aux = lhs;
-			lhs = new LlvmRegister(new LlvmPointer(rhs.type));
-			assembler.add(new LlvmBitcast(lhs, aux, lhs.type));
-			assembler.add(new LlvmStore(rhs, lhs));
+			LlvmValue aux = new LlvmRegister(new LlvmPointer(rhs.type));
+			assembler.add(new LlvmBitcast(aux, lhs, aux.type));
+			assembler.add(new LlvmStore(rhs, aux));
 		}
 		return null;
 	}
@@ -357,7 +358,16 @@ public class Codegen extends VisitorAdapter{
 	      LlvmRegister elementPtr = new LlvmRegister( new LlvmPointer(((LlvmArray) ((LlvmPointer) arrayBase.type).content).content));
 	      List<LlvmValue> offsets = new LinkedList<LlvmValue> ();
 	      offsets.add(new LlvmIntegerLiteral(0));
-	      offsets.add (n.index.accept (this));
+	      
+	      LlvmValue v = n.index.accept(this);
+	      if(v instanceof LlvmIntegerLiteral) {
+	    	  offsets.add(new LlvmIntegerLiteral(((LlvmIntegerLiteral )v).value+1));	  
+	      } else {
+	    	  LlvmRegister lhsPlus = new LlvmRegister(LlvmPrimitiveType.I32);
+	    	  assembler.add(new LlvmPlus(lhsPlus,lhsPlus.type,v,new LlvmIntegerLiteral(1)));
+	    	  offsets.add(lhsPlus);
+	      }
+	      
 	 
 	      assembler.add (new LlvmGetElementPointer (elementPtr, arrayBase, offsets));
 	      
@@ -367,8 +377,8 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(And n){
 		LlvmValue v1 = n.lhs.accept(this);
 		LlvmValue v2 = n.rhs.accept(this);
-		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I32);
-		assembler.add(new LlvmAnd(lhs,LlvmPrimitiveType.I32,v1,v2));
+		LlvmRegister lhs = new LlvmRegister(v1.type);
+		assembler.add(new LlvmAnd(lhs,v1.type,v1,v2));
 		return lhs;
 	}
 	
@@ -410,7 +420,15 @@ public class Codegen extends VisitorAdapter{
 	      LlvmRegister elementPtr = new LlvmRegister (new LlvmPointer(((LlvmArray)((LlvmPointer)arrayBase.type).content).content));
 	      List<LlvmValue> offsets = new LinkedList<LlvmValue> ();
 	      offsets.add(new LlvmIntegerLiteral(0));
-	      offsets.add (n.index.accept (this));
+	      
+	      LlvmValue v = n.index.accept(this);
+	      if(v instanceof LlvmIntegerLiteral) {
+	    	  offsets.add(new LlvmIntegerLiteral(((LlvmIntegerLiteral )v).value+1));	  
+	      } else {
+	    	  LlvmRegister lhsPlus = new LlvmRegister(LlvmPrimitiveType.I32);
+	    	  assembler.add(new LlvmPlus(lhsPlus,lhsPlus.type,v,new LlvmIntegerLiteral(1)));
+	    	  offsets.add(lhsPlus);
+	      }
 	 
 	      assembler.add (new LlvmGetElementPointer (elementPtr, arrayBase, offsets));
 	 
@@ -418,7 +436,15 @@ public class Codegen extends VisitorAdapter{
 	      assembler.add (new LlvmLoad (lhs, elementPtr));
 	      return lhs;
 	}
-	public LlvmValue visit(ArrayLength n){return null;}
+	public LlvmValue visit(ArrayLength n){
+		LlvmValue rhst = n.array.accept(this);
+		LlvmValue rhs = new LlvmNamedValue(rhst.toString(),rhst.type);
+		LlvmValue lhs = new LlvmRegister(LlvmPrimitiveType.I32);
+		LlvmValue lhsBit = new LlvmRegister(new LlvmPointer(LlvmPrimitiveType.I32));
+		assembler.add(new LlvmBitcast(lhsBit,rhs,lhsBit.type));
+		assembler.add(new LlvmLoad(lhs,lhsBit));
+		return lhs;
+	}
 	
 	public LlvmValue visit(Call n){
 		
@@ -492,9 +518,12 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(NewArray n){
 		//alloca
 		LlvmValue lhs = new LlvmRegister(new LlvmArray(0,LlvmPrimitiveType.I32));
-		//assembler.add(new LlvmAlloca(lhs,lhs.type,new LinkedList<LlvmValue>()));
 		assembler.add(new LlvmMalloc(lhs,LlvmPrimitiveType.I32,n.size.accept(this)));
 		lhs.type = new LlvmPointer(LlvmPrimitiveType.I32);
+		
+		//store the size of the array at position 0
+		assembler.add(new LlvmStore(LlvmMalloc.lastArraySizeReg,lhs));
+		
 		return lhs;
 		
 	}
