@@ -1,24 +1,18 @@
-class A
-{
-    public static void main(String[] args)
-    {
-    	System.out.println(new B().soma());
+class Factorial{
+    public static void main(String[] a){
+	System.out.println(new Fac().ComputeFac(10));
     }
 }
-class B
-{
-	public int soma()
-	{
-		int x;
-		if (1==2) {
-			x = 1;
-			x=3;
-			x=4;
-		}
-		else {
-			x = 2;
-			x=3;
-		}
-		return x;
-	}
+
+class Fac {
+
+    public int ComputeFac(int num){
+	int num_aux ;
+	if (num < 1)
+	    num_aux = 1 ;
+	else 
+	    num_aux = num * (this.ComputeFac(num-1)) ;
+	return num_aux ;
+    }
+
 }

@@ -307,7 +307,28 @@ public class Codegen extends VisitorAdapter{
 
 		return null;
 	}
-	public LlvmValue visit(While n){return null;}
+	public LlvmValue visit(While n){
+		System.out.println("While");
+
+		// condition
+		LlvmValue cond;
+		
+		// labels
+		LlvmLabelValue labelDo = new LlvmLabelValue("do"+labelCount++);
+		LlvmLabelValue labelBreak = new LlvmLabelValue("break"+labelCount++);
+		
+		// while
+		assembler.add(new LlvmBranch(labelDo));
+		assembler.add(new LlvmLabel(labelDo));
+		n.body.accept(this);
+		cond = n.condition.accept(this);
+		assembler.add(new LlvmBranch(cond, labelDo, labelBreak));
+			
+		// break
+		assembler.add(new LlvmLabel(labelBreak));
+
+		return null;
+	}
 	public LlvmValue visit(Assign n){
 		System.out.println("Assign");
 		LlvmValue tmp = n.var.accept(this);
