@@ -12,6 +12,6 @@ public  class LlvmNot extends LlvmInstruction{
     }
 
     public String toString(){
-    	return "  " +lhs + " = xor " + type + " " + op1 + ", 4294967295";
+    	return "  " +lhs + " = icmp eq " + type+" " + op1 + ", 0";
     }
 }

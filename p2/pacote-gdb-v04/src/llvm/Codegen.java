@@ -319,8 +319,10 @@ public class Codegen extends VisitorAdapter{
 		LlvmLabelValue labelDo = new LlvmLabelValue("do"+labelCount++);
 		LlvmLabelValue labelBreak = new LlvmLabelValue("break"+labelCount++);
 		
+		
 		// while
-		assembler.add(new LlvmBranch(labelDo));
+		cond = n.condition.accept(this);
+		assembler.add(new LlvmBranch(cond, labelDo, labelBreak));
 		assembler.add(new LlvmLabel(labelDo));
 		n.body.accept(this);
 		cond = n.condition.accept(this);
@@ -386,7 +388,7 @@ public class Codegen extends VisitorAdapter{
 		 LlvmValue v1 = n.lhs.accept(this);
 		 LlvmValue v2 = n.rhs.accept(this);
 		 LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I1);
-		 assembler.add(new LlvmIcmp(lhs, "ult", v1.type, v1, v2));
+		 assembler.add(new LlvmIcmp(lhs, "slt", v1.type, v1, v2));
 		 return lhs;
 	}
 	
