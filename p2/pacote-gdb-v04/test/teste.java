@@ -1,14 +1,19 @@
-// testando this (OK)
-class m
+class A
 {
-   public static void main(String[] args)
-   {
-      System.out.println(new a().i());
-   }
+    public static void main(String[] args)
+    {
+    	System.out.println(new B().soma());
+    }
 }
-
-class a
+class B
 {
-   public a A(){return this;}
-   public int i(){ return 0; }
+	public int soma()
+	{
+		int x;
+		if (1==2)
+			x = 1;
+		else
+			x = 2;
+		return x;
+	}
 }
