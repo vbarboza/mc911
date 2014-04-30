@@ -1,5 +1,6 @@
-%class.Tree = type { %class.Tree *, %class.Tree *, i32, i1, i1, %class.Tree * }
-%class.BT = type { }
+%class.LL = type { }
+%class.List = type { %class.Element *, %class.List *, i1 }
+%class.Element = type { i32, i32, i1 }
 @.formatting.string = private constant [4 x i8] c"%d\0A\00"
 define i32 @main() {
 entry:
@@ -8,764 +9,585 @@ entry:
   %tmp2 = mul i32 1, 1
   %tmp3 = add i32 1, %tmp2
   %tmp4 = call i8* @malloc ( i32 %tmp3)
-  %tmp1 = bitcast i8* %tmp4 to %class.BT*
-  %tmp6 = call i32 (%class.BT *)* @__Start_BT(%class.BT * %tmp1)
+  %tmp1 = bitcast i8* %tmp4 to %class.LL*
+  %tmp6 = call i32 (%class.LL *)* @__Start_LL(%class.LL * %tmp1)
   %tmp7 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
   %tmp8 = call i32 (i8 *, ...)* @printf(i8 * %tmp7, i32 %tmp6)
   %tmp9 = load i32 * %tmp0
   ret i32 %tmp9
 }
-define i32 @__Start_BT(%class.BT * %this) {
+define i1 @__Init_Element(%class.Element * %this, i32 %v_Age, i32 %v_Salary, i1 %v_Married) {
 entry:
-  %this.temp = alloca %class.BT *
-  store %class.BT * %this, %class.BT * * %this.temp
-  %root.temp = alloca %class.Tree
-  %ntb.temp = alloca i1
-  %nti.temp = alloca i32
-  %tmp11 = mul i32 1, 1
-  %tmp12 = add i32 1, %tmp11
-  %tmp13 = call i8* @malloc ( i32 %tmp12)
-  %tmp10 = bitcast i8* %tmp13 to %class.Tree*
-  %tmp14 = bitcast %class.Tree * %root.temp to %class.Tree * *
-  store %class.Tree * %tmp10, %class.Tree * * %tmp14
-  %tmp16 = call i1 (%class.Tree *, i32)* @__Init_Tree(%class.Tree * %root.temp, i32 16)
-  store i1 %tmp16, i1 * %ntb.temp
-  %tmp18 = call i1 (%class.Tree *)* @__Print_Tree(%class.Tree * %root.temp)
-  store i1 %tmp18, i1 * %ntb.temp
-  %tmp19 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
-  %tmp20 = call i32 (i8 *, ...)* @printf(i8 * %tmp19, i32 100000000)
-  %tmp22 = call i1 (%class.Tree *, i32)* @__Insert_Tree(%class.Tree * %root.temp, i32 8)
-  store i1 %tmp22, i1 * %ntb.temp
-  %tmp24 = call i1 (%class.Tree *)* @__Print_Tree(%class.Tree * %root.temp)
-  store i1 %tmp24, i1 * %ntb.temp
-  %tmp26 = call i1 (%class.Tree *, i32)* @__Insert_Tree(%class.Tree * %root.temp, i32 24)
-  store i1 %tmp26, i1 * %ntb.temp
-  %tmp28 = call i1 (%class.Tree *, i32)* @__Insert_Tree(%class.Tree * %root.temp, i32 4)
-  store i1 %tmp28, i1 * %ntb.temp
-  %tmp30 = call i1 (%class.Tree *, i32)* @__Insert_Tree(%class.Tree * %root.temp, i32 12)
-  store i1 %tmp30, i1 * %ntb.temp
-  %tmp32 = call i1 (%class.Tree *, i32)* @__Insert_Tree(%class.Tree * %root.temp, i32 20)
-  store i1 %tmp32, i1 * %ntb.temp
-  %tmp34 = call i1 (%class.Tree *, i32)* @__Insert_Tree(%class.Tree * %root.temp, i32 28)
-  store i1 %tmp34, i1 * %ntb.temp
-  %tmp36 = call i1 (%class.Tree *, i32)* @__Insert_Tree(%class.Tree * %root.temp, i32 14)
-  store i1 %tmp36, i1 * %ntb.temp
-  %tmp38 = call i1 (%class.Tree *)* @__Print_Tree(%class.Tree * %root.temp)
-  store i1 %tmp38, i1 * %ntb.temp
-  %tmp40 = call i32 (%class.Tree *, i32)* @__Search_Tree(%class.Tree * %root.temp, i32 24)
-  %tmp41 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
-  %tmp42 = call i32 (i8 *, ...)* @printf(i8 * %tmp41, i32 %tmp40)
-  %tmp44 = call i32 (%class.Tree *, i32)* @__Search_Tree(%class.Tree * %root.temp, i32 12)
-  %tmp45 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
-  %tmp46 = call i32 (i8 *, ...)* @printf(i8 * %tmp45, i32 %tmp44)
-  %tmp48 = call i32 (%class.Tree *, i32)* @__Search_Tree(%class.Tree * %root.temp, i32 16)
-  %tmp49 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
-  %tmp50 = call i32 (i8 *, ...)* @printf(i8 * %tmp49, i32 %tmp48)
-  %tmp52 = call i32 (%class.Tree *, i32)* @__Search_Tree(%class.Tree * %root.temp, i32 50)
-  %tmp53 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
-  %tmp54 = call i32 (i8 *, ...)* @printf(i8 * %tmp53, i32 %tmp52)
-  %tmp56 = call i32 (%class.Tree *, i32)* @__Search_Tree(%class.Tree * %root.temp, i32 12)
-  %tmp57 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
-  %tmp58 = call i32 (i8 *, ...)* @printf(i8 * %tmp57, i32 %tmp56)
-  %tmp60 = call i1 (%class.Tree *, i32)* @__Delete_Tree(%class.Tree * %root.temp, i32 12)
-  store i1 %tmp60, i1 * %ntb.temp
-  %tmp62 = call i1 (%class.Tree *)* @__Print_Tree(%class.Tree * %root.temp)
-  store i1 %tmp62, i1 * %ntb.temp
-  %tmp64 = call i32 (%class.Tree *, i32)* @__Search_Tree(%class.Tree * %root.temp, i32 12)
-  %tmp65 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
-  %tmp66 = call i32 (i8 *, ...)* @printf(i8 * %tmp65, i32 %tmp64)
-  ret i32 0
-}
-define i1 @__Init_Tree(%class.Tree * %this, i32 %v_key) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %v_key.temp = alloca i32
-  store i32 %v_key, i32 * %v_key.temp
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp68 = load i32 * %v_key.temp
-  store i32 %tmp68, i32 * %key.temp
-  store i1 false, i1 * %has_left.temp
-  store i1 false, i1 * %has_right.temp
+  %this.temp = alloca %class.Element *
+  store %class.Element * %this, %class.Element * * %this.temp
+  %v_Age.temp = alloca i32
+  store i32 %v_Age, i32 * %v_Age.temp
+  %v_Salary.temp = alloca i32
+  store i32 %v_Salary, i32 * %v_Salary.temp
+  %v_Married.temp = alloca i1
+  store i1 %v_Married, i1 * %v_Married.temp
+  %Age.temp = getelementptr %class.Element * %this, i32 0, i32 0
+  %Salary.temp = getelementptr %class.Element * %this, i32 0, i32 1
+  %Married.temp = getelementptr %class.Element * %this, i32 0, i32 2
+  %tmp10 = load i32 * %v_Age.temp
+  store i32 %tmp10, i32 * %Age.temp
+  %tmp11 = load i32 * %v_Salary.temp
+  store i32 %tmp11, i32 * %Salary.temp
+  %tmp12 = load i1 * %v_Married.temp
+  store i1 %tmp12, i1 * %Married.temp
   ret i1 true
 }
-define i1 @__SetRight_Tree(%class.Tree * %this, %class.Tree * %rn) {
+define i32 @__GetAge_Element(%class.Element * %this) {
 entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %rn.temp = alloca %class.Tree *
-  store %class.Tree * %rn, %class.Tree * * %rn.temp
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp70 = bitcast %class.Tree * * %right.temp to %class.Tree * * *
-  store %class.Tree * * %rn.temp, %class.Tree * * * %tmp70
-  ret i1 true
+  %this.temp = alloca %class.Element *
+  store %class.Element * %this, %class.Element * * %this.temp
+  %Age.temp = getelementptr %class.Element * %this, i32 0, i32 0
+  %Salary.temp = getelementptr %class.Element * %this, i32 0, i32 1
+  %Married.temp = getelementptr %class.Element * %this, i32 0, i32 2
+  %tmp14 = load i32 * %Age.temp
+  ret i32 %tmp14
 }
-define i1 @__SetLeft_Tree(%class.Tree * %this, %class.Tree * %ln) {
+define i32 @__GetSalary_Element(%class.Element * %this) {
 entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %ln.temp = alloca %class.Tree *
-  store %class.Tree * %ln, %class.Tree * * %ln.temp
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp72 = bitcast %class.Tree * * %left.temp to %class.Tree * * *
-  store %class.Tree * * %ln.temp, %class.Tree * * * %tmp72
-  ret i1 true
+  %this.temp = alloca %class.Element *
+  store %class.Element * %this, %class.Element * * %this.temp
+  %Age.temp = getelementptr %class.Element * %this, i32 0, i32 0
+  %Salary.temp = getelementptr %class.Element * %this, i32 0, i32 1
+  %Married.temp = getelementptr %class.Element * %this, i32 0, i32 2
+  %tmp16 = load i32 * %Salary.temp
+  ret i32 %tmp16
 }
-define %class.Tree * @__GetRight_Tree(%class.Tree * %this) {
+define i1 @__GetMarried_Element(%class.Element * %this) {
 entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  ret %class.Tree * * %right.temp
+  %this.temp = alloca %class.Element *
+  store %class.Element * %this, %class.Element * * %this.temp
+  %Age.temp = getelementptr %class.Element * %this, i32 0, i32 0
+  %Salary.temp = getelementptr %class.Element * %this, i32 0, i32 1
+  %Married.temp = getelementptr %class.Element * %this, i32 0, i32 2
+  %tmp18 = load i1 * %Married.temp
+  ret i1 %tmp18
 }
-define %class.Tree * @__GetLeft_Tree(%class.Tree * %this) {
+define i1 @__Equal_Element(%class.Element * %this, %class.Element * %other) {
 entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  ret %class.Tree * * %left.temp
-}
-define i32 @__GetKey_Tree(%class.Tree * %this) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp74 = load i32 * %key.temp
-  ret i32 %tmp74
-}
-define i1 @__SetKey_Tree(%class.Tree * %this, i32 %v_key) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %v_key.temp = alloca i32
-  store i32 %v_key, i32 * %v_key.temp
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp76 = load i32 * %v_key.temp
-  store i32 %tmp76, i32 * %key.temp
-  ret i1 true
-}
-define i1 @__GetHas_Right_Tree(%class.Tree * %this) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp78 = load i1 * %has_right.temp
-  ret i1 %tmp78
-}
-define i1 @__GetHas_Left_Tree(%class.Tree * %this) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp80 = load i1 * %has_left.temp
-  ret i1 %tmp80
-}
-define i1 @__SetHas_Left_Tree(%class.Tree * %this, i1 %val) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %val.temp = alloca i1
-  store i1 %val, i1 * %val.temp
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp82 = load i1 * %val.temp
-  store i1 %tmp82, i1 * %has_left.temp
-  ret i1 true
-}
-define i1 @__SetHas_Right_Tree(%class.Tree * %this, i1 %val) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %val.temp = alloca i1
-  store i1 %val, i1 * %val.temp
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp84 = load i1 * %val.temp
-  store i1 %tmp84, i1 * %has_right.temp
-  ret i1 true
-}
-define i1 @__Compare_Tree(%class.Tree * %this, i32 %num1, i32 %num2) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %num1.temp = alloca i32
-  store i32 %num1, i32 * %num1.temp
-  %num2.temp = alloca i32
-  store i32 %num2, i32 * %num2.temp
-  %ntb.temp = alloca i1
-  %nti.temp = alloca i32
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  store i1 false, i1 * %ntb.temp
-  %tmp86 = load i32 * %num2.temp
-  %tmp87 = add i32 %tmp86, 1
-  store i32 %tmp87, i32 * %nti.temp
-  %tmp88 = load i32 * %num1.temp
-  %tmp89 = load i32 * %num2.temp
-  %tmp90 = icmp slt i32 %tmp88, %tmp89
-   br i1 %tmp90, label %then0, label %else1
+  %this.temp = alloca %class.Element *
+  store %class.Element * %this, %class.Element * * %this.temp
+  %other.temp = alloca %class.Element *
+  store %class.Element * %other, %class.Element * * %other.temp
+  %ret_val.temp = alloca i1
+  %aux01.temp = alloca i32
+  %aux02.temp = alloca i32
+  %nt.temp = alloca i32
+  %Age.temp = getelementptr %class.Element * %this, i32 0, i32 0
+  %Salary.temp = getelementptr %class.Element * %this, i32 0, i32 1
+  %Married.temp = getelementptr %class.Element * %this, i32 0, i32 2
+  store i1 true, i1 * %ret_val.temp
+  %tmp20 = load %class.Element * * %other.temp
+  %tmp21 = call i32 (%class.Element *)* @__GetAge_Element(%class.Element * %tmp20)
+  store i32 %tmp21, i32 * %aux01.temp
+  %tmp22 = load %class.Element * * %this.temp
+  %tmp24 = load i32 * %aux01.temp
+  %tmp25 = load i32 * %Age.temp
+  %tmp26 = call i1 (%class.Element *, i32, i32)* @__Compare_Element(%class.Element * %tmp22, i32 %tmp24, i32 %tmp25)
+  %tmp27 = icmp eq i1 %tmp26, 0
+   br i1 %tmp27, label %then0, label %else1
 then0:
-  store i1 false, i1 * %ntb.temp
+  store i1 false, i1 * %ret_val.temp
    br label %always2
 else1:
-  %tmp91 = load i32 * %num1.temp
-  %tmp92 = load i32 * %nti.temp
-  %tmp93 = icmp slt i32 %tmp91, %tmp92
-  %tmp94 = icmp eq i1 %tmp93, 0
-   br i1 %tmp94, label %then3, label %else4
+  %tmp28 = load %class.Element * * %other.temp
+  %tmp29 = call i32 (%class.Element *)* @__GetSalary_Element(%class.Element * %tmp28)
+  store i32 %tmp29, i32 * %aux02.temp
+  %tmp30 = load %class.Element * * %this.temp
+  %tmp32 = load i32 * %aux02.temp
+  %tmp33 = load i32 * %Salary.temp
+  %tmp34 = call i1 (%class.Element *, i32, i32)* @__Compare_Element(%class.Element * %tmp30, i32 %tmp32, i32 %tmp33)
+  %tmp35 = icmp eq i1 %tmp34, 0
+   br i1 %tmp35, label %then3, label %else4
 then3:
-  store i1 false, i1 * %ntb.temp
+  store i1 false, i1 * %ret_val.temp
    br label %always5
 else4:
-  store i1 true, i1 * %ntb.temp
+  %tmp36 = load i1 * %Married.temp
+   br i1 %tmp36, label %then6, label %else7
+then6:
+  %tmp37 = load %class.Element * * %other.temp
+  %tmp38 = call i1 (%class.Element *)* @__GetMarried_Element(%class.Element * %tmp37)
+  %tmp39 = icmp eq i1 %tmp38, 0
+   br i1 %tmp39, label %then9, label %else10
+then9:
+  store i1 false, i1 * %ret_val.temp
+   br label %always11
+else10:
+  store i32 0, i32 * %nt.temp
+   br label %always11
+always11:
+   br label %always8
+else7:
+  %tmp40 = load %class.Element * * %other.temp
+  %tmp41 = call i1 (%class.Element *)* @__GetMarried_Element(%class.Element * %tmp40)
+   br i1 %tmp41, label %then12, label %else13
+then12:
+  store i1 false, i1 * %ret_val.temp
+   br label %always14
+else13:
+  store i32 0, i32 * %nt.temp
+   br label %always14
+always14:
+   br label %always8
+always8:
    br label %always5
 always5:
    br label %always2
 always2:
-  %tmp95 = load i1 * %ntb.temp
-  ret i1 %tmp95
+  %tmp42 = load i1 * %ret_val.temp
+  ret i1 %tmp42
 }
-define i1 @__Insert_Tree(%class.Tree * %this, i32 %v_key) {
+define i1 @__Compare_Element(%class.Element * %this, i32 %num1, i32 %num2) {
 entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %v_key.temp = alloca i32
-  store i32 %v_key, i32 * %v_key.temp
-  %new_node.temp = alloca %class.Tree
-  %ntb.temp = alloca i1
-  %cont.temp = alloca i1
-  %key_aux.temp = alloca i32
-  %current_node.temp = alloca %class.Tree
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp98 = mul i32 1, 1
-  %tmp99 = add i32 1, %tmp98
-  %tmp100 = call i8* @malloc ( i32 %tmp99)
-  %tmp97 = bitcast i8* %tmp100 to %class.Tree*
-  %tmp101 = bitcast %class.Tree * %new_node.temp to %class.Tree * *
-  store %class.Tree * %tmp97, %class.Tree * * %tmp101
-  %tmp103 = load i32 * %v_key.temp
-  %tmp104 = call i1 (%class.Tree *, i32)* @__Init_Tree(%class.Tree * %new_node.temp, i32 %tmp103)
-  store i1 %tmp104, i1 * %ntb.temp
-  %tmp105 = load %class.Tree * * %this.temp
-  %tmp106 = bitcast %class.Tree * %current_node.temp to %class.Tree * *
-  store %class.Tree * %tmp105, %class.Tree * * %tmp106
-  store i1 true, i1 * %cont.temp
-  %tmp107 = load i1 * %cont.temp
-   br i1 %tmp107, label %do6, label %break7
-do6:
-  %tmp109 = call i32 (%class.Tree *)* @__GetKey_Tree(%class.Tree * %current_node.temp)
-  store i32 %tmp109, i32 * %key_aux.temp
-  %tmp110 = load i32 * %v_key.temp
-  %tmp111 = load i32 * %key_aux.temp
-  %tmp112 = icmp slt i32 %tmp110, %tmp111
-   br i1 %tmp112, label %then8, label %else9
-then8:
-  %tmp114 = call i1 (%class.Tree *)* @__GetHas_Left_Tree(%class.Tree * %current_node.temp)
-   br i1 %tmp114, label %then11, label %else12
-then11:
-  %tmp116 = call %class.Tree * (%class.Tree *)* @__GetLeft_Tree(%class.Tree * %current_node.temp)
-  %tmp117 = bitcast %class.Tree * %current_node.temp to %class.Tree * *
-  store %class.Tree * %tmp116, %class.Tree * * %tmp117
-   br label %always13
-else12:
-  store i1 false, i1 * %cont.temp
-  %tmp119 = call i1 (%class.Tree *, i1)* @__SetHas_Left_Tree(%class.Tree * %current_node.temp, i1 true)
-  store i1 %tmp119, i1 * %ntb.temp
-  %tmp121 = call i1 (%class.Tree *, %class.Tree *)* @__SetLeft_Tree(%class.Tree * %current_node.temp, %class.Tree * %new_node.temp)
-  store i1 %tmp121, i1 * %ntb.temp
-   br label %always13
-always13:
-   br label %always10
-else9:
-  %tmp123 = call i1 (%class.Tree *)* @__GetHas_Right_Tree(%class.Tree * %current_node.temp)
-   br i1 %tmp123, label %then14, label %else15
-then14:
-  %tmp125 = call %class.Tree * (%class.Tree *)* @__GetRight_Tree(%class.Tree * %current_node.temp)
-  %tmp126 = bitcast %class.Tree * %current_node.temp to %class.Tree * *
-  store %class.Tree * %tmp125, %class.Tree * * %tmp126
-   br label %always16
-else15:
-  store i1 false, i1 * %cont.temp
-  %tmp128 = call i1 (%class.Tree *, i1)* @__SetHas_Right_Tree(%class.Tree * %current_node.temp, i1 true)
-  store i1 %tmp128, i1 * %ntb.temp
-  %tmp130 = call i1 (%class.Tree *, %class.Tree *)* @__SetRight_Tree(%class.Tree * %current_node.temp, %class.Tree * %new_node.temp)
-  store i1 %tmp130, i1 * %ntb.temp
-   br label %always16
-always16:
-   br label %always10
-always10:
-  %tmp131 = load i1 * %cont.temp
-   br i1 %tmp131, label %do6, label %break7
-break7:
+  %this.temp = alloca %class.Element *
+  store %class.Element * %this, %class.Element * * %this.temp
+  %num1.temp = alloca i32
+  store i32 %num1, i32 * %num1.temp
+  %num2.temp = alloca i32
+  store i32 %num2, i32 * %num2.temp
+  %retval.temp = alloca i1
+  %aux02.temp = alloca i32
+  %Age.temp = getelementptr %class.Element * %this, i32 0, i32 0
+  %Salary.temp = getelementptr %class.Element * %this, i32 0, i32 1
+  %Married.temp = getelementptr %class.Element * %this, i32 0, i32 2
+  store i1 false, i1 * %retval.temp
+  %tmp44 = load i32 * %num2.temp
+  %tmp45 = add i32 %tmp44, 1
+  store i32 %tmp45, i32 * %aux02.temp
+  %tmp46 = load i32 * %num1.temp
+  %tmp47 = load i32 * %num2.temp
+  %tmp48 = icmp slt i32 %tmp46, %tmp47
+   br i1 %tmp48, label %then15, label %else16
+then15:
+  store i1 false, i1 * %retval.temp
+   br label %always17
+else16:
+  %tmp49 = load i32 * %num1.temp
+  %tmp50 = load i32 * %aux02.temp
+  %tmp51 = icmp slt i32 %tmp49, %tmp50
+  %tmp52 = icmp eq i1 %tmp51, 0
+   br i1 %tmp52, label %then18, label %else19
+then18:
+  store i1 false, i1 * %retval.temp
+   br label %always20
+else19:
+  store i1 true, i1 * %retval.temp
+   br label %always20
+always20:
+   br label %always17
+always17:
+  %tmp53 = load i1 * %retval.temp
+  ret i1 %tmp53
+}
+define i1 @__Init_List(%class.List * %this) {
+entry:
+  %this.temp = alloca %class.List *
+  store %class.List * %this, %class.List * * %this.temp
+  %elem.temp = getelementptr %class.List * %this, i32 0, i32 0
+  %next.temp = getelementptr %class.List * %this, i32 0, i32 1
+  %end.temp = getelementptr %class.List * %this, i32 0, i32 2
+  store i1 true, i1 * %end.temp
   ret i1 true
 }
-define i1 @__Delete_Tree(%class.Tree * %this, i32 %v_key) {
+define i1 @__InitNew_List(%class.List * %this, %class.Element * %v_elem, %class.List * %v_next, i1 %v_end) {
 entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %v_key.temp = alloca i32
-  store i32 %v_key, i32 * %v_key.temp
-  %current_node.temp = alloca %class.Tree
-  %parent_node.temp = alloca %class.Tree
-  %cont.temp = alloca i1
-  %found.temp = alloca i1
-  %is_root.temp = alloca i1
-  %key_aux.temp = alloca i32
-  %ntb.temp = alloca i1
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp133 = load %class.Tree * * %this.temp
-  %tmp134 = bitcast %class.Tree * %current_node.temp to %class.Tree * *
-  store %class.Tree * %tmp133, %class.Tree * * %tmp134
-  %tmp135 = load %class.Tree * * %this.temp
-  %tmp136 = bitcast %class.Tree * %parent_node.temp to %class.Tree * *
-  store %class.Tree * %tmp135, %class.Tree * * %tmp136
-  store i1 true, i1 * %cont.temp
-  store i1 false, i1 * %found.temp
-  store i1 true, i1 * %is_root.temp
-  %tmp137 = load i1 * %cont.temp
-   br i1 %tmp137, label %do17, label %break18
-do17:
-  %tmp139 = call i32 (%class.Tree *)* @__GetKey_Tree(%class.Tree * %current_node.temp)
-  store i32 %tmp139, i32 * %key_aux.temp
-  %tmp140 = load i32 * %v_key.temp
-  %tmp141 = load i32 * %key_aux.temp
-  %tmp142 = icmp slt i32 %tmp140, %tmp141
-   br i1 %tmp142, label %then19, label %else20
-then19:
-  %tmp144 = call i1 (%class.Tree *)* @__GetHas_Left_Tree(%class.Tree * %current_node.temp)
-   br i1 %tmp144, label %then22, label %else23
-then22:
-  %tmp145 = bitcast %class.Tree * %parent_node.temp to %class.Tree * *
-  store %class.Tree * %current_node.temp, %class.Tree * * %tmp145
-  %tmp147 = call %class.Tree * (%class.Tree *)* @__GetLeft_Tree(%class.Tree * %current_node.temp)
-  %tmp148 = bitcast %class.Tree * %current_node.temp to %class.Tree * *
-  store %class.Tree * %tmp147, %class.Tree * * %tmp148
-   br label %always24
-else23:
-  store i1 false, i1 * %cont.temp
-   br label %always24
-always24:
-   br label %always21
-else20:
-  %tmp149 = load i32 * %key_aux.temp
-  %tmp150 = load i32 * %v_key.temp
-  %tmp151 = icmp slt i32 %tmp149, %tmp150
-   br i1 %tmp151, label %then25, label %else26
-then25:
-  %tmp153 = call i1 (%class.Tree *)* @__GetHas_Right_Tree(%class.Tree * %current_node.temp)
-   br i1 %tmp153, label %then28, label %else29
-then28:
-  %tmp154 = bitcast %class.Tree * %parent_node.temp to %class.Tree * *
-  store %class.Tree * %current_node.temp, %class.Tree * * %tmp154
-  %tmp156 = call %class.Tree * (%class.Tree *)* @__GetRight_Tree(%class.Tree * %current_node.temp)
-  %tmp157 = bitcast %class.Tree * %current_node.temp to %class.Tree * *
-  store %class.Tree * %tmp156, %class.Tree * * %tmp157
-   br label %always30
-else29:
-  store i1 false, i1 * %cont.temp
-   br label %always30
-always30:
-   br label %always27
-else26:
-  %tmp158 = load i1 * %is_root.temp
-   br i1 %tmp158, label %then31, label %else32
-then31:
-  %tmp160 = call i1 (%class.Tree *)* @__GetHas_Right_Tree(%class.Tree * %current_node.temp)
-  %tmp161 = icmp eq i1 %tmp160, 0
-  %tmp163 = call i1 (%class.Tree *)* @__GetHas_Left_Tree(%class.Tree * %current_node.temp)
-  %tmp164 = icmp eq i1 %tmp163, 0
-  %tmp165 = and i1 %tmp161, %tmp164
-   br i1 %tmp165, label %then34, label %else35
+  %this.temp = alloca %class.List *
+  store %class.List * %this, %class.List * * %this.temp
+  %v_elem.temp = alloca %class.Element *
+  store %class.Element * %v_elem, %class.Element * * %v_elem.temp
+  %v_next.temp = alloca %class.List *
+  store %class.List * %v_next, %class.List * * %v_next.temp
+  %v_end.temp = alloca i1
+  store i1 %v_end, i1 * %v_end.temp
+  %elem.temp = getelementptr %class.List * %this, i32 0, i32 0
+  %next.temp = getelementptr %class.List * %this, i32 0, i32 1
+  %end.temp = getelementptr %class.List * %this, i32 0, i32 2
+  %tmp56 = load i1 * %v_end.temp
+  store i1 %tmp56, i1 * %end.temp
+  %tmp57 = bitcast %class.Element * * %elem.temp to %class.Element * * *
+  store %class.Element * * %v_elem.temp, %class.Element * * * %tmp57
+  %tmp58 = bitcast %class.List * * %next.temp to %class.List * * *
+  store %class.List * * %v_next.temp, %class.List * * * %tmp58
+  ret i1 true
+}
+define %class.List * @__Insert_List(%class.List * %this, %class.Element * %new_elem) {
+entry:
+  %this.temp = alloca %class.List *
+  store %class.List * %this, %class.List * * %this.temp
+  %new_elem.temp = alloca %class.Element *
+  store %class.Element * %new_elem, %class.Element * * %new_elem.temp
+  %ret_val.temp = alloca i1
+  %aux03.temp = alloca %class.List
+  %aux02.temp = alloca %class.List
+  %elem.temp = getelementptr %class.List * %this, i32 0, i32 0
+  %next.temp = getelementptr %class.List * %this, i32 0, i32 1
+  %end.temp = getelementptr %class.List * %this, i32 0, i32 2
+  %tmp60 = load %class.List * * %this.temp
+  %tmp61 = bitcast %class.List * %aux03.temp to %class.List * *
+  store %class.List * %tmp60, %class.List * * %tmp61
+  %tmp63 = mul i32 1, 1
+  %tmp64 = add i32 1, %tmp63
+  %tmp65 = call i8* @malloc ( i32 %tmp64)
+  %tmp62 = bitcast i8* %tmp65 to %class.List*
+  %tmp66 = bitcast %class.List * %aux02.temp to %class.List * *
+  store %class.List * %tmp62, %class.List * * %tmp66
+  %tmp68 = load %class.Element * * %new_elem.temp
+  %tmp69 = call i1 (%class.List *, %class.Element *, %class.List *, i1)* @__InitNew_List(%class.List * %aux02.temp, %class.Element * %tmp68, %class.List * %aux03.temp, i1 false)
+  store i1 %tmp69, i1 * %ret_val.temp
+  ret %class.List * %aux02.temp
+}
+define i1 @__SetNext_List(%class.List * %this, %class.List * %v_next) {
+entry:
+  %this.temp = alloca %class.List *
+  store %class.List * %this, %class.List * * %this.temp
+  %v_next.temp = alloca %class.List *
+  store %class.List * %v_next, %class.List * * %v_next.temp
+  %elem.temp = getelementptr %class.List * %this, i32 0, i32 0
+  %next.temp = getelementptr %class.List * %this, i32 0, i32 1
+  %end.temp = getelementptr %class.List * %this, i32 0, i32 2
+  %tmp70 = bitcast %class.List * * %next.temp to %class.List * * *
+  store %class.List * * %v_next.temp, %class.List * * * %tmp70
+  ret i1 true
+}
+define %class.List * @__Delete_List(%class.List * %this, %class.Element * %e) {
+entry:
+  %this.temp = alloca %class.List *
+  store %class.List * %this, %class.List * * %this.temp
+  %e.temp = alloca %class.Element *
+  store %class.Element * %e, %class.Element * * %e.temp
+  %my_head.temp = alloca %class.List
+  %ret_val.temp = alloca i1
+  %aux05.temp = alloca i1
+  %aux01.temp = alloca %class.List
+  %prev.temp = alloca %class.List
+  %var_end.temp = alloca i1
+  %var_elem.temp = alloca %class.Element
+  %aux04.temp = alloca i32
+  %nt.temp = alloca i32
+  %elem.temp = getelementptr %class.List * %this, i32 0, i32 0
+  %next.temp = getelementptr %class.List * %this, i32 0, i32 1
+  %end.temp = getelementptr %class.List * %this, i32 0, i32 2
+  %tmp72 = load %class.List * * %this.temp
+  %tmp73 = bitcast %class.List * %my_head.temp to %class.List * *
+  store %class.List * %tmp72, %class.List * * %tmp73
+  store i1 false, i1 * %ret_val.temp
+  %tmp74 = sub i32 0, 1
+  store i32 %tmp74, i32 * %aux04.temp
+  %tmp75 = load %class.List * * %this.temp
+  %tmp76 = bitcast %class.List * %aux01.temp to %class.List * *
+  store %class.List * %tmp75, %class.List * * %tmp76
+  %tmp77 = load %class.List * * %this.temp
+  %tmp78 = bitcast %class.List * %prev.temp to %class.List * *
+  store %class.List * %tmp77, %class.List * * %tmp78
+  %tmp79 = load i1 * %end.temp
+  store i1 %tmp79, i1 * %var_end.temp
+  %tmp80 = bitcast %class.Element * %var_elem.temp to %class.Element * * *
+  store %class.Element * * %elem.temp, %class.Element * * * %tmp80
+  %tmp81 = load i1 * %var_end.temp
+  %tmp82 = icmp eq i1 %tmp81, 0
+  %tmp83 = load i1 * %ret_val.temp
+  %tmp84 = icmp eq i1 %tmp83, 0
+  %tmp85 = and i1 %tmp82, %tmp84
+   br i1 %tmp85, label %do21, label %break22
+do21:
+  %tmp86 = load %class.Element * * %e.temp
+  %tmp87 = call i1 (%class.Element *, %class.Element *)* @__Equal_Element(%class.Element * %tmp86, %class.Element * %var_elem.temp)
+   br i1 %tmp87, label %then23, label %else24
+then23:
+  store i1 true, i1 * %ret_val.temp
+  %tmp88 = load i32 * %aux04.temp
+  %tmp89 = icmp slt i32 %tmp88, 0
+   br i1 %tmp89, label %then26, label %else27
+then26:
+  %tmp91 = call %class.List * (%class.List *)* @__GetNext_List(%class.List * %aux01.temp)
+  %tmp92 = bitcast %class.List * %my_head.temp to %class.List * *
+  store %class.List * %tmp91, %class.List * * %tmp92
+   br label %always28
+else27:
+  %tmp93 = sub i32 0, 555
+  %tmp94 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
+  %tmp95 = call i32 (i8 *, ...)* @printf(i8 * %tmp94, i32 %tmp93)
+  %tmp98 = call %class.List * (%class.List *)* @__GetNext_List(%class.List * %aux01.temp)
+  %tmp99 = call i1 (%class.List *, %class.List *)* @__SetNext_List(%class.List * %prev.temp, %class.List * %tmp98)
+  store i1 %tmp99, i1 * %aux05.temp
+  %tmp100 = sub i32 0, 555
+  %tmp101 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
+  %tmp102 = call i32 (i8 *, ...)* @printf(i8 * %tmp101, i32 %tmp100)
+   br label %always28
+always28:
+   br label %always25
+else24:
+  store i32 0, i32 * %nt.temp
+   br label %always25
+always25:
+  %tmp103 = load i1 * %ret_val.temp
+  %tmp104 = icmp eq i1 %tmp103, 0
+   br i1 %tmp104, label %then29, label %else30
+then29:
+  %tmp105 = bitcast %class.List * %prev.temp to %class.List * *
+  store %class.List * %aux01.temp, %class.List * * %tmp105
+  %tmp107 = call %class.List * (%class.List *)* @__GetNext_List(%class.List * %aux01.temp)
+  %tmp108 = bitcast %class.List * %aux01.temp to %class.List * *
+  store %class.List * %tmp107, %class.List * * %tmp108
+  %tmp110 = call i1 (%class.List *)* @__GetEnd_List(%class.List * %aux01.temp)
+  store i1 %tmp110, i1 * %var_end.temp
+  %tmp112 = call %class.Element * (%class.List *)* @__GetElem_List(%class.List * %aux01.temp)
+  %tmp113 = bitcast %class.Element * %var_elem.temp to %class.Element * *
+  store %class.Element * %tmp112, %class.Element * * %tmp113
+  store i32 1, i32 * %aux04.temp
+   br label %always31
+else30:
+  store i32 0, i32 * %nt.temp
+   br label %always31
+always31:
+  %tmp114 = load i1 * %var_end.temp
+  %tmp115 = icmp eq i1 %tmp114, 0
+  %tmp116 = load i1 * %ret_val.temp
+  %tmp117 = icmp eq i1 %tmp116, 0
+  %tmp118 = and i1 %tmp115, %tmp117
+   br i1 %tmp118, label %do21, label %break22
+break22:
+  ret %class.List * %my_head.temp
+}
+define i32 @__Search_List(%class.List * %this, %class.Element * %e) {
+entry:
+  %this.temp = alloca %class.List *
+  store %class.List * %this, %class.List * * %this.temp
+  %e.temp = alloca %class.Element *
+  store %class.Element * %e, %class.Element * * %e.temp
+  %int_ret_val.temp = alloca i32
+  %aux01.temp = alloca %class.List
+  %var_elem.temp = alloca %class.Element
+  %var_end.temp = alloca i1
+  %nt.temp = alloca i32
+  %elem.temp = getelementptr %class.List * %this, i32 0, i32 0
+  %next.temp = getelementptr %class.List * %this, i32 0, i32 1
+  %end.temp = getelementptr %class.List * %this, i32 0, i32 2
+  store i32 0, i32 * %int_ret_val.temp
+  %tmp119 = load %class.List * * %this.temp
+  %tmp120 = bitcast %class.List * %aux01.temp to %class.List * *
+  store %class.List * %tmp119, %class.List * * %tmp120
+  %tmp121 = load i1 * %end.temp
+  store i1 %tmp121, i1 * %var_end.temp
+  %tmp122 = bitcast %class.Element * %var_elem.temp to %class.Element * * *
+  store %class.Element * * %elem.temp, %class.Element * * * %tmp122
+  %tmp123 = load i1 * %var_end.temp
+  %tmp124 = icmp eq i1 %tmp123, 0
+   br i1 %tmp124, label %do32, label %break33
+do32:
+  %tmp125 = load %class.Element * * %e.temp
+  %tmp126 = call i1 (%class.Element *, %class.Element *)* @__Equal_Element(%class.Element * %tmp125, %class.Element * %var_elem.temp)
+   br i1 %tmp126, label %then34, label %else35
 then34:
-  store i1 true, i1 * %ntb.temp
+  store i32 1, i32 * %int_ret_val.temp
    br label %always36
 else35:
-  %tmp166 = load %class.Tree * * %this.temp
-  %tmp168 = call i1 (%class.Tree *, %class.Tree *, %class.Tree *)* @__Remove_Tree(%class.Tree * %tmp166, %class.Tree * %parent_node.temp, %class.Tree * %current_node.temp)
-  store i1 %tmp168, i1 * %ntb.temp
+  store i32 0, i32 * %nt.temp
    br label %always36
 always36:
-   br label %always33
-else32:
-  %tmp169 = load %class.Tree * * %this.temp
-  %tmp171 = call i1 (%class.Tree *, %class.Tree *, %class.Tree *)* @__Remove_Tree(%class.Tree * %tmp169, %class.Tree * %parent_node.temp, %class.Tree * %current_node.temp)
-  store i1 %tmp171, i1 * %ntb.temp
-   br label %always33
-always33:
-  store i1 true, i1 * %found.temp
-  store i1 false, i1 * %cont.temp
-   br label %always27
-always27:
-   br label %always21
-always21:
-  store i1 false, i1 * %is_root.temp
-  %tmp172 = load i1 * %cont.temp
-   br i1 %tmp172, label %do17, label %break18
-break18:
-  %tmp173 = load i1 * %found.temp
-  ret i1 %tmp173
+  %tmp128 = call %class.List * (%class.List *)* @__GetNext_List(%class.List * %aux01.temp)
+  %tmp129 = bitcast %class.List * %aux01.temp to %class.List * *
+  store %class.List * %tmp128, %class.List * * %tmp129
+  %tmp131 = call i1 (%class.List *)* @__GetEnd_List(%class.List * %aux01.temp)
+  store i1 %tmp131, i1 * %var_end.temp
+  %tmp133 = call %class.Element * (%class.List *)* @__GetElem_List(%class.List * %aux01.temp)
+  %tmp134 = bitcast %class.Element * %var_elem.temp to %class.Element * *
+  store %class.Element * %tmp133, %class.Element * * %tmp134
+  %tmp135 = load i1 * %var_end.temp
+  %tmp136 = icmp eq i1 %tmp135, 0
+   br i1 %tmp136, label %do32, label %break33
+break33:
+  %tmp137 = load i32 * %int_ret_val.temp
+  ret i32 %tmp137
 }
-define i1 @__Remove_Tree(%class.Tree * %this, %class.Tree * %p_node, %class.Tree * %c_node) {
+define i1 @__GetEnd_List(%class.List * %this) {
 entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %p_node.temp = alloca %class.Tree *
-  store %class.Tree * %p_node, %class.Tree * * %p_node.temp
-  %c_node.temp = alloca %class.Tree *
-  store %class.Tree * %c_node, %class.Tree * * %c_node.temp
-  %ntb.temp = alloca i1
-  %auxkey1.temp = alloca i32
-  %auxkey2.temp = alloca i32
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp175 = load %class.Tree * * %c_node.temp
-  %tmp176 = call i1 (%class.Tree *)* @__GetHas_Left_Tree(%class.Tree * %tmp175)
-   br i1 %tmp176, label %then37, label %else38
-then37:
-  %tmp177 = load %class.Tree * * %this.temp
-  %tmp179 = call i1 (%class.Tree *, %class.Tree *, %class.Tree *)* @__RemoveLeft_Tree(%class.Tree * %tmp177, %class.Tree * * %p_node.temp, %class.Tree * * %c_node.temp)
-  store i1 %tmp179, i1 * %ntb.temp
-   br label %always39
-else38:
-  %tmp180 = load %class.Tree * * %c_node.temp
-  %tmp181 = call i1 (%class.Tree *)* @__GetHas_Right_Tree(%class.Tree * %tmp180)
-   br i1 %tmp181, label %then40, label %else41
-then40:
-  %tmp182 = load %class.Tree * * %this.temp
-  %tmp184 = call i1 (%class.Tree *, %class.Tree *, %class.Tree *)* @__RemoveRight_Tree(%class.Tree * %tmp182, %class.Tree * * %p_node.temp, %class.Tree * * %c_node.temp)
-  store i1 %tmp184, i1 * %ntb.temp
-   br label %always42
-else41:
-  %tmp185 = load %class.Tree * * %c_node.temp
-  %tmp186 = call i32 (%class.Tree *)* @__GetKey_Tree(%class.Tree * %tmp185)
-  store i32 %tmp186, i32 * %auxkey1.temp
-  %tmp187 = load %class.Tree * * %p_node.temp
-  %tmp188 = call %class.Tree * (%class.Tree *)* @__GetLeft_Tree(%class.Tree * %tmp187)
-  %tmp190 = call i32 (%class.Tree *)* @__GetKey_Tree(%class.Tree * %tmp188)
-  store i32 %tmp190, i32 * %auxkey2.temp
-  %tmp191 = load %class.Tree * * %this.temp
-  %tmp193 = load i32 * %auxkey1.temp
-  %tmp194 = load i32 * %auxkey2.temp
-  %tmp195 = call i1 (%class.Tree *, i32, i32)* @__Compare_Tree(%class.Tree * %tmp191, i32 %tmp193, i32 %tmp194)
-   br i1 %tmp195, label %then43, label %else44
-then43:
-  %tmp196 = load %class.Tree * * %p_node.temp
-  %tmp197 = call i1 (%class.Tree *, %class.Tree *)* @__SetLeft_Tree(%class.Tree * %tmp196, %class.Tree * * %my_null.temp)
-  store i1 %tmp197, i1 * %ntb.temp
-  %tmp198 = load %class.Tree * * %p_node.temp
-  %tmp199 = call i1 (%class.Tree *, i1)* @__SetHas_Left_Tree(%class.Tree * %tmp198, i1 false)
-  store i1 %tmp199, i1 * %ntb.temp
-   br label %always45
-else44:
-  %tmp200 = load %class.Tree * * %p_node.temp
-  %tmp201 = call i1 (%class.Tree *, %class.Tree *)* @__SetRight_Tree(%class.Tree * %tmp200, %class.Tree * * %my_null.temp)
-  store i1 %tmp201, i1 * %ntb.temp
-  %tmp202 = load %class.Tree * * %p_node.temp
-  %tmp203 = call i1 (%class.Tree *, i1)* @__SetHas_Right_Tree(%class.Tree * %tmp202, i1 false)
-  store i1 %tmp203, i1 * %ntb.temp
-   br label %always45
-always45:
-   br label %always42
-always42:
-   br label %always39
-always39:
+  %this.temp = alloca %class.List *
+  store %class.List * %this, %class.List * * %this.temp
+  %elem.temp = getelementptr %class.List * %this, i32 0, i32 0
+  %next.temp = getelementptr %class.List * %this, i32 0, i32 1
+  %end.temp = getelementptr %class.List * %this, i32 0, i32 2
+  %tmp139 = load i1 * %end.temp
+  ret i1 %tmp139
+}
+define %class.Element * @__GetElem_List(%class.List * %this) {
+entry:
+  %this.temp = alloca %class.List *
+  store %class.List * %this, %class.List * * %this.temp
+  %elem.temp = getelementptr %class.List * %this, i32 0, i32 0
+  %next.temp = getelementptr %class.List * %this, i32 0, i32 1
+  %end.temp = getelementptr %class.List * %this, i32 0, i32 2
+  %tmp141 = load %class.Element * * %elem.temp
+  ret %class.Element * %tmp141
+}
+define %class.List * @__GetNext_List(%class.List * %this) {
+entry:
+  %this.temp = alloca %class.List *
+  store %class.List * %this, %class.List * * %this.temp
+  %elem.temp = getelementptr %class.List * %this, i32 0, i32 0
+  %next.temp = getelementptr %class.List * %this, i32 0, i32 1
+  %end.temp = getelementptr %class.List * %this, i32 0, i32 2
+  %tmp142 = load %class.List * * %next.temp
+  ret %class.List * %tmp142
+}
+define i1 @__Print_List(%class.List * %this) {
+entry:
+  %this.temp = alloca %class.List *
+  store %class.List * %this, %class.List * * %this.temp
+  %aux01.temp = alloca %class.List
+  %var_end.temp = alloca i1
+  %var_elem.temp = alloca %class.Element
+  %elem.temp = getelementptr %class.List * %this, i32 0, i32 0
+  %next.temp = getelementptr %class.List * %this, i32 0, i32 1
+  %end.temp = getelementptr %class.List * %this, i32 0, i32 2
+  %tmp143 = load %class.List * * %this.temp
+  %tmp144 = bitcast %class.List * %aux01.temp to %class.List * *
+  store %class.List * %tmp143, %class.List * * %tmp144
+  %tmp145 = load i1 * %end.temp
+  store i1 %tmp145, i1 * %var_end.temp
+  %tmp146 = bitcast %class.Element * %var_elem.temp to %class.Element * * *
+  store %class.Element * * %elem.temp, %class.Element * * * %tmp146
+  %tmp147 = load i1 * %var_end.temp
+  %tmp148 = icmp eq i1 %tmp147, 0
+   br i1 %tmp148, label %do37, label %break38
+do37:
+  %tmp150 = call i32 (%class.Element *)* @__GetAge_Element(%class.Element * %var_elem.temp)
+  %tmp151 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
+  %tmp152 = call i32 (i8 *, ...)* @printf(i8 * %tmp151, i32 %tmp150)
+  %tmp154 = call %class.List * (%class.List *)* @__GetNext_List(%class.List * %aux01.temp)
+  %tmp155 = bitcast %class.List * %aux01.temp to %class.List * *
+  store %class.List * %tmp154, %class.List * * %tmp155
+  %tmp157 = call i1 (%class.List *)* @__GetEnd_List(%class.List * %aux01.temp)
+  store i1 %tmp157, i1 * %var_end.temp
+  %tmp159 = call %class.Element * (%class.List *)* @__GetElem_List(%class.List * %aux01.temp)
+  %tmp160 = bitcast %class.Element * %var_elem.temp to %class.Element * *
+  store %class.Element * %tmp159, %class.Element * * %tmp160
+  %tmp161 = load i1 * %var_end.temp
+  %tmp162 = icmp eq i1 %tmp161, 0
+   br i1 %tmp162, label %do37, label %break38
+break38:
   ret i1 true
 }
-define i1 @__RemoveRight_Tree(%class.Tree * %this, %class.Tree * %p_node, %class.Tree * %c_node) {
+define i32 @__Start_LL(%class.LL * %this) {
 entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %p_node.temp = alloca %class.Tree *
-  store %class.Tree * %p_node, %class.Tree * * %p_node.temp
-  %c_node.temp = alloca %class.Tree *
-  store %class.Tree * %c_node, %class.Tree * * %c_node.temp
-  %ntb.temp = alloca i1
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp205 = load %class.Tree * * %c_node.temp
-  %tmp206 = call i1 (%class.Tree *)* @__GetHas_Right_Tree(%class.Tree * %tmp205)
-   br i1 %tmp206, label %do46, label %break47
-do46:
-  %tmp207 = load %class.Tree * * %c_node.temp
-  %tmp208 = load %class.Tree * * %c_node.temp
-  %tmp209 = call %class.Tree * (%class.Tree *)* @__GetRight_Tree(%class.Tree * %tmp208)
-  %tmp211 = call i32 (%class.Tree *)* @__GetKey_Tree(%class.Tree * %tmp209)
-  %tmp212 = call i1 (%class.Tree *, i32)* @__SetKey_Tree(%class.Tree * %tmp207, i32 %tmp211)
-  store i1 %tmp212, i1 * %ntb.temp
-  %tmp213 = bitcast %class.Tree * * %p_node.temp to %class.Tree * * *
-  store %class.Tree * * %c_node.temp, %class.Tree * * * %tmp213
-  %tmp214 = load %class.Tree * * %c_node.temp
-  %tmp215 = call %class.Tree * (%class.Tree *)* @__GetRight_Tree(%class.Tree * %tmp214)
-  store %class.Tree * %tmp215, %class.Tree * * %c_node.temp
-  %tmp216 = load %class.Tree * * %c_node.temp
-  %tmp217 = call i1 (%class.Tree *)* @__GetHas_Right_Tree(%class.Tree * %tmp216)
-   br i1 %tmp217, label %do46, label %break47
-break47:
-  %tmp218 = load %class.Tree * * %p_node.temp
-  %tmp219 = call i1 (%class.Tree *, %class.Tree *)* @__SetRight_Tree(%class.Tree * %tmp218, %class.Tree * * %my_null.temp)
-  store i1 %tmp219, i1 * %ntb.temp
-  %tmp220 = load %class.Tree * * %p_node.temp
-  %tmp221 = call i1 (%class.Tree *, i1)* @__SetHas_Right_Tree(%class.Tree * %tmp220, i1 false)
-  store i1 %tmp221, i1 * %ntb.temp
-  ret i1 true
-}
-define i1 @__RemoveLeft_Tree(%class.Tree * %this, %class.Tree * %p_node, %class.Tree * %c_node) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %p_node.temp = alloca %class.Tree *
-  store %class.Tree * %p_node, %class.Tree * * %p_node.temp
-  %c_node.temp = alloca %class.Tree *
-  store %class.Tree * %c_node, %class.Tree * * %c_node.temp
-  %ntb.temp = alloca i1
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp223 = load %class.Tree * * %c_node.temp
-  %tmp224 = call i1 (%class.Tree *)* @__GetHas_Left_Tree(%class.Tree * %tmp223)
-   br i1 %tmp224, label %do48, label %break49
-do48:
-  %tmp225 = load %class.Tree * * %c_node.temp
-  %tmp226 = load %class.Tree * * %c_node.temp
-  %tmp227 = call %class.Tree * (%class.Tree *)* @__GetLeft_Tree(%class.Tree * %tmp226)
-  %tmp229 = call i32 (%class.Tree *)* @__GetKey_Tree(%class.Tree * %tmp227)
-  %tmp230 = call i1 (%class.Tree *, i32)* @__SetKey_Tree(%class.Tree * %tmp225, i32 %tmp229)
-  store i1 %tmp230, i1 * %ntb.temp
-  %tmp231 = bitcast %class.Tree * * %p_node.temp to %class.Tree * * *
-  store %class.Tree * * %c_node.temp, %class.Tree * * * %tmp231
-  %tmp232 = load %class.Tree * * %c_node.temp
-  %tmp233 = call %class.Tree * (%class.Tree *)* @__GetLeft_Tree(%class.Tree * %tmp232)
-  store %class.Tree * %tmp233, %class.Tree * * %c_node.temp
-  %tmp234 = load %class.Tree * * %c_node.temp
-  %tmp235 = call i1 (%class.Tree *)* @__GetHas_Left_Tree(%class.Tree * %tmp234)
-   br i1 %tmp235, label %do48, label %break49
-break49:
-  %tmp236 = load %class.Tree * * %p_node.temp
-  %tmp237 = call i1 (%class.Tree *, %class.Tree *)* @__SetLeft_Tree(%class.Tree * %tmp236, %class.Tree * * %my_null.temp)
-  store i1 %tmp237, i1 * %ntb.temp
-  %tmp238 = load %class.Tree * * %p_node.temp
-  %tmp239 = call i1 (%class.Tree *, i1)* @__SetHas_Left_Tree(%class.Tree * %tmp238, i1 false)
-  store i1 %tmp239, i1 * %ntb.temp
-  ret i1 true
-}
-define i32 @__Search_Tree(%class.Tree * %this, i32 %v_key) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %v_key.temp = alloca i32
-  store i32 %v_key, i32 * %v_key.temp
-  %cont.temp = alloca i1
-  %ifound.temp = alloca i32
-  %current_node.temp = alloca %class.Tree
-  %key_aux.temp = alloca i32
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp241 = load %class.Tree * * %this.temp
-  %tmp242 = bitcast %class.Tree * %current_node.temp to %class.Tree * *
-  store %class.Tree * %tmp241, %class.Tree * * %tmp242
-  store i1 true, i1 * %cont.temp
-  store i32 0, i32 * %ifound.temp
-  %tmp243 = load i1 * %cont.temp
-   br i1 %tmp243, label %do50, label %break51
-do50:
-  %tmp245 = call i32 (%class.Tree *)* @__GetKey_Tree(%class.Tree * %current_node.temp)
-  store i32 %tmp245, i32 * %key_aux.temp
-  %tmp246 = load i32 * %v_key.temp
-  %tmp247 = load i32 * %key_aux.temp
-  %tmp248 = icmp slt i32 %tmp246, %tmp247
-   br i1 %tmp248, label %then52, label %else53
-then52:
-  %tmp250 = call i1 (%class.Tree *)* @__GetHas_Left_Tree(%class.Tree * %current_node.temp)
-   br i1 %tmp250, label %then55, label %else56
-then55:
-  %tmp252 = call %class.Tree * (%class.Tree *)* @__GetLeft_Tree(%class.Tree * %current_node.temp)
-  %tmp253 = bitcast %class.Tree * %current_node.temp to %class.Tree * *
-  store %class.Tree * %tmp252, %class.Tree * * %tmp253
-   br label %always57
-else56:
-  store i1 false, i1 * %cont.temp
-   br label %always57
-always57:
-   br label %always54
-else53:
-  %tmp254 = load i32 * %key_aux.temp
-  %tmp255 = load i32 * %v_key.temp
-  %tmp256 = icmp slt i32 %tmp254, %tmp255
-   br i1 %tmp256, label %then58, label %else59
-then58:
-  %tmp258 = call i1 (%class.Tree *)* @__GetHas_Right_Tree(%class.Tree * %current_node.temp)
-   br i1 %tmp258, label %then61, label %else62
-then61:
-  %tmp260 = call %class.Tree * (%class.Tree *)* @__GetRight_Tree(%class.Tree * %current_node.temp)
-  %tmp261 = bitcast %class.Tree * %current_node.temp to %class.Tree * *
-  store %class.Tree * %tmp260, %class.Tree * * %tmp261
-   br label %always63
-else62:
-  store i1 false, i1 * %cont.temp
-   br label %always63
-always63:
-   br label %always60
-else59:
-  store i32 1, i32 * %ifound.temp
-  store i1 false, i1 * %cont.temp
-   br label %always60
-always60:
-   br label %always54
-always54:
-  %tmp262 = load i1 * %cont.temp
-   br i1 %tmp262, label %do50, label %break51
-break51:
-  %tmp263 = load i32 * %ifound.temp
-  ret i32 %tmp263
-}
-define i1 @__Print_Tree(%class.Tree * %this) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %current_node.temp = alloca %class.Tree
-  %ntb.temp = alloca i1
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp265 = load %class.Tree * * %this.temp
-  %tmp266 = bitcast %class.Tree * %current_node.temp to %class.Tree * *
-  store %class.Tree * %tmp265, %class.Tree * * %tmp266
-  %tmp267 = load %class.Tree * * %this.temp
-  %tmp269 = call i1 (%class.Tree *, %class.Tree *)* @__RecPrint_Tree(%class.Tree * %tmp267, %class.Tree * %current_node.temp)
-  store i1 %tmp269, i1 * %ntb.temp
-  ret i1 true
-}
-define i1 @__RecPrint_Tree(%class.Tree * %this, %class.Tree * %node) {
-entry:
-  %this.temp = alloca %class.Tree *
-  store %class.Tree * %this, %class.Tree * * %this.temp
-  %node.temp = alloca %class.Tree *
-  store %class.Tree * %node, %class.Tree * * %node.temp
-  %ntb.temp = alloca i1
-  %left.temp = getelementptr %class.Tree * %this, i32 0, i32 0
-  %right.temp = getelementptr %class.Tree * %this, i32 0, i32 1
-  %key.temp = getelementptr %class.Tree * %this, i32 0, i32 2
-  %has_left.temp = getelementptr %class.Tree * %this, i32 0, i32 3
-  %has_right.temp = getelementptr %class.Tree * %this, i32 0, i32 4
-  %my_null.temp = getelementptr %class.Tree * %this, i32 0, i32 5
-  %tmp271 = load %class.Tree * * %node.temp
-  %tmp272 = call i1 (%class.Tree *)* @__GetHas_Left_Tree(%class.Tree * %tmp271)
-   br i1 %tmp272, label %then64, label %else65
-then64:
-  %tmp273 = load %class.Tree * * %this.temp
-  %tmp275 = load %class.Tree * * %node.temp
-  %tmp276 = call %class.Tree * (%class.Tree *)* @__GetLeft_Tree(%class.Tree * %tmp275)
-  %tmp277 = call i1 (%class.Tree *, %class.Tree *)* @__RecPrint_Tree(%class.Tree * %tmp273, %class.Tree * %tmp276)
-  store i1 %tmp277, i1 * %ntb.temp
-   br label %always66
-else65:
-  store i1 true, i1 * %ntb.temp
-   br label %always66
-always66:
-  %tmp278 = load %class.Tree * * %node.temp
-  %tmp279 = call i32 (%class.Tree *)* @__GetKey_Tree(%class.Tree * %tmp278)
-  %tmp280 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
-  %tmp281 = call i32 (i8 *, ...)* @printf(i8 * %tmp280, i32 %tmp279)
-  %tmp282 = load %class.Tree * * %node.temp
-  %tmp283 = call i1 (%class.Tree *)* @__GetHas_Right_Tree(%class.Tree * %tmp282)
-   br i1 %tmp283, label %then67, label %else68
-then67:
-  %tmp284 = load %class.Tree * * %this.temp
-  %tmp286 = load %class.Tree * * %node.temp
-  %tmp287 = call %class.Tree * (%class.Tree *)* @__GetRight_Tree(%class.Tree * %tmp286)
-  %tmp288 = call i1 (%class.Tree *, %class.Tree *)* @__RecPrint_Tree(%class.Tree * %tmp284, %class.Tree * %tmp287)
-  store i1 %tmp288, i1 * %ntb.temp
-   br label %always69
-else68:
-  store i1 true, i1 * %ntb.temp
-   br label %always69
-always69:
-  ret i1 true
+  %this.temp = alloca %class.LL *
+  store %class.LL * %this, %class.LL * * %this.temp
+  %head.temp = alloca %class.List
+  %last_elem.temp = alloca %class.List
+  %aux01.temp = alloca i1
+  %el01.temp = alloca %class.Element
+  %el02.temp = alloca %class.Element
+  %el03.temp = alloca %class.Element
+  %tmp165 = mul i32 1, 1
+  %tmp166 = add i32 1, %tmp165
+  %tmp167 = call i8* @malloc ( i32 %tmp166)
+  %tmp164 = bitcast i8* %tmp167 to %class.List*
+  %tmp168 = bitcast %class.List * %last_elem.temp to %class.List * *
+  store %class.List * %tmp164, %class.List * * %tmp168
+  %tmp170 = call i1 (%class.List *)* @__Init_List(%class.List * %last_elem.temp)
+  store i1 %tmp170, i1 * %aux01.temp
+  %tmp171 = bitcast %class.List * %head.temp to %class.List * *
+  store %class.List * %last_elem.temp, %class.List * * %tmp171
+  %tmp173 = call i1 (%class.List *)* @__Init_List(%class.List * %head.temp)
+  store i1 %tmp173, i1 * %aux01.temp
+  %tmp175 = call i1 (%class.List *)* @__Print_List(%class.List * %head.temp)
+  store i1 %tmp175, i1 * %aux01.temp
+  %tmp177 = mul i32 1, 1
+  %tmp178 = add i32 1, %tmp177
+  %tmp179 = call i8* @malloc ( i32 %tmp178)
+  %tmp176 = bitcast i8* %tmp179 to %class.Element*
+  %tmp180 = bitcast %class.Element * %el01.temp to %class.Element * *
+  store %class.Element * %tmp176, %class.Element * * %tmp180
+  %tmp182 = call i1 (%class.Element *, i32, i32, i1)* @__Init_Element(%class.Element * %el01.temp, i32 25, i32 37000, i1 false)
+  store i1 %tmp182, i1 * %aux01.temp
+  %tmp184 = call %class.List * (%class.List *, %class.Element *)* @__Insert_List(%class.List * %head.temp, %class.Element * %el01.temp)
+  %tmp185 = bitcast %class.List * %head.temp to %class.List * *
+  store %class.List * %tmp184, %class.List * * %tmp185
+  %tmp187 = call i1 (%class.List *)* @__Print_List(%class.List * %head.temp)
+  store i1 %tmp187, i1 * %aux01.temp
+  %tmp188 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
+  %tmp189 = call i32 (i8 *, ...)* @printf(i8 * %tmp188, i32 10000000)
+  %tmp191 = mul i32 1, 1
+  %tmp192 = add i32 1, %tmp191
+  %tmp193 = call i8* @malloc ( i32 %tmp192)
+  %tmp190 = bitcast i8* %tmp193 to %class.Element*
+  %tmp194 = bitcast %class.Element * %el01.temp to %class.Element * *
+  store %class.Element * %tmp190, %class.Element * * %tmp194
+  %tmp196 = call i1 (%class.Element *, i32, i32, i1)* @__Init_Element(%class.Element * %el01.temp, i32 39, i32 42000, i1 true)
+  store i1 %tmp196, i1 * %aux01.temp
+  %tmp197 = bitcast %class.Element * %el02.temp to %class.Element * *
+  store %class.Element * %el01.temp, %class.Element * * %tmp197
+  %tmp199 = call %class.List * (%class.List *, %class.Element *)* @__Insert_List(%class.List * %head.temp, %class.Element * %el01.temp)
+  %tmp200 = bitcast %class.List * %head.temp to %class.List * *
+  store %class.List * %tmp199, %class.List * * %tmp200
+  %tmp202 = call i1 (%class.List *)* @__Print_List(%class.List * %head.temp)
+  store i1 %tmp202, i1 * %aux01.temp
+  %tmp203 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
+  %tmp204 = call i32 (i8 *, ...)* @printf(i8 * %tmp203, i32 10000000)
+  %tmp206 = mul i32 1, 1
+  %tmp207 = add i32 1, %tmp206
+  %tmp208 = call i8* @malloc ( i32 %tmp207)
+  %tmp205 = bitcast i8* %tmp208 to %class.Element*
+  %tmp209 = bitcast %class.Element * %el01.temp to %class.Element * *
+  store %class.Element * %tmp205, %class.Element * * %tmp209
+  %tmp211 = call i1 (%class.Element *, i32, i32, i1)* @__Init_Element(%class.Element * %el01.temp, i32 22, i32 34000, i1 false)
+  store i1 %tmp211, i1 * %aux01.temp
+  %tmp213 = call %class.List * (%class.List *, %class.Element *)* @__Insert_List(%class.List * %head.temp, %class.Element * %el01.temp)
+  %tmp214 = bitcast %class.List * %head.temp to %class.List * *
+  store %class.List * %tmp213, %class.List * * %tmp214
+  %tmp216 = call i1 (%class.List *)* @__Print_List(%class.List * %head.temp)
+  store i1 %tmp216, i1 * %aux01.temp
+  %tmp218 = mul i32 1, 1
+  %tmp219 = add i32 1, %tmp218
+  %tmp220 = call i8* @malloc ( i32 %tmp219)
+  %tmp217 = bitcast i8* %tmp220 to %class.Element*
+  %tmp221 = bitcast %class.Element * %el03.temp to %class.Element * *
+  store %class.Element * %tmp217, %class.Element * * %tmp221
+  %tmp223 = call i1 (%class.Element *, i32, i32, i1)* @__Init_Element(%class.Element * %el03.temp, i32 27, i32 34000, i1 false)
+  store i1 %tmp223, i1 * %aux01.temp
+  %tmp225 = call i32 (%class.List *, %class.Element *)* @__Search_List(%class.List * %head.temp, %class.Element * %el02.temp)
+  %tmp226 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
+  %tmp227 = call i32 (i8 *, ...)* @printf(i8 * %tmp226, i32 %tmp225)
+  %tmp229 = call i32 (%class.List *, %class.Element *)* @__Search_List(%class.List * %head.temp, %class.Element * %el03.temp)
+  %tmp230 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
+  %tmp231 = call i32 (i8 *, ...)* @printf(i8 * %tmp230, i32 %tmp229)
+  %tmp232 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
+  %tmp233 = call i32 (i8 *, ...)* @printf(i8 * %tmp232, i32 10000000)
+  %tmp235 = mul i32 1, 1
+  %tmp236 = add i32 1, %tmp235
+  %tmp237 = call i8* @malloc ( i32 %tmp236)
+  %tmp234 = bitcast i8* %tmp237 to %class.Element*
+  %tmp238 = bitcast %class.Element * %el01.temp to %class.Element * *
+  store %class.Element * %tmp234, %class.Element * * %tmp238
+  %tmp240 = call i1 (%class.Element *, i32, i32, i1)* @__Init_Element(%class.Element * %el01.temp, i32 28, i32 35000, i1 false)
+  store i1 %tmp240, i1 * %aux01.temp
+  %tmp242 = call %class.List * (%class.List *, %class.Element *)* @__Insert_List(%class.List * %head.temp, %class.Element * %el01.temp)
+  %tmp243 = bitcast %class.List * %head.temp to %class.List * *
+  store %class.List * %tmp242, %class.List * * %tmp243
+  %tmp245 = call i1 (%class.List *)* @__Print_List(%class.List * %head.temp)
+  store i1 %tmp245, i1 * %aux01.temp
+  %tmp246 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
+  %tmp247 = call i32 (i8 *, ...)* @printf(i8 * %tmp246, i32 2220000)
+  %tmp249 = call %class.List * (%class.List *, %class.Element *)* @__Delete_List(%class.List * %head.temp, %class.Element * %el02.temp)
+  %tmp250 = bitcast %class.List * %head.temp to %class.List * *
+  store %class.List * %tmp249, %class.List * * %tmp250
+  %tmp252 = call i1 (%class.List *)* @__Print_List(%class.List * %head.temp)
+  store i1 %tmp252, i1 * %aux01.temp
+  %tmp253 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
+  %tmp254 = call i32 (i8 *, ...)* @printf(i8 * %tmp253, i32 33300000)
+  %tmp256 = call %class.List * (%class.List *, %class.Element *)* @__Delete_List(%class.List * %head.temp, %class.Element * %el01.temp)
+  %tmp257 = bitcast %class.List * %head.temp to %class.List * *
+  store %class.List * %tmp256, %class.List * * %tmp257
+  %tmp259 = call i1 (%class.List *)* @__Print_List(%class.List * %head.temp)
+  store i1 %tmp259, i1 * %aux01.temp
+  %tmp260 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
+  %tmp261 = call i32 (i8 *, ...)* @printf(i8 * %tmp260, i32 44440000)
+  ret i32 0
 }
 declare i32 @printf (i8 *, ...)
 declare i8 * @malloc (i32)

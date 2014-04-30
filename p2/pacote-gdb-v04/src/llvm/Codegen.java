@@ -241,7 +241,14 @@ public class Codegen extends VisitorAdapter{
 		}
 		// retorno
 		System.out.println("method"+n.name.toString());
-        assembler.add(new LlvmRet(n.returnExp.accept(this)));
+		LlvmValue retval = n.returnExp.accept(this);
+		LlvmValue retreg = null;
+		if(retval.type.toString().contains("* *")) {
+			retreg = new LlvmRegister(methodEnv.methodType);
+			assembler.add(new LlvmLoad(retreg,retval));
+		}
+		else { retreg = retval; }
+        assembler.add(new LlvmRet(retreg));
         
         //fechar método
 		assembler.add(new LlvmCloseDefinition());
@@ -471,7 +478,13 @@ public class Codegen extends VisitorAdapter{
 		}
 		//demais argumentos
 		for(util.List<Exp> v = n.actuals;v != null;v = v.tail) {
-			args.add(v.head.accept(this));
+			LlvmValue t = v.head.accept(this);
+			if(t.type.toString().contains("* *")) {
+				LlvmValue lhsarg = new LlvmRegister(( (LlvmPointer) t.type).content);
+				assembler.add(new LlvmLoad(lhsarg,t));
+				args.add(lhsarg);
+			}
+			else { args.add(t); }
 		}
 		
 		for(LlvmValue v : symtab_meth.formalsList){
