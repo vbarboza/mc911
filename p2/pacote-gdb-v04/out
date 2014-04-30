@@ -1,0 +1,504 @@
+java -classpath src:lib/projeto2.jar main/Main test/teste.java teste.s
+var Age
+type int 
+OOOOOOOOOOBJETTOOOi32
+var Age
+type int 
+var Salary
+type int 
+OOOOOOOOOOBJETTOOOi32
+var Salary
+type int 
+var Married
+type boolean 
+OOOOOOOOOOBJETTOOOi1
+var Married
+type boolean 
+var Age
+type int 
+var Age
+type int 
+var Salary
+type int 
+var Salary
+type int 
+var Married
+type boolean 
+var Married
+type boolean 
+formal v_Age
+type int 
+formal v_Age
+type int 
+formal v_Salary
+type int 
+formal v_Salary
+type int 
+formal v_Married
+type boolean 
+formal v_Married
+type boolean 
+type boolean 
+type boolean 
+type int 
+type int 
+type int 
+type int 
+type boolean 
+type boolean 
+formal other
+formal other
+var ret_val
+type boolean 
+var ret_val
+type boolean 
+var aux01
+type int 
+var aux01
+type int 
+var aux02
+type int 
+var aux02
+type int 
+var nt
+type int 
+var nt
+type int 
+type boolean 
+type boolean 
+formal num1
+type int 
+formal num1
+type int 
+formal num2
+type int 
+formal num2
+type int 
+var retval
+type boolean 
+var retval
+type boolean 
+var aux02
+type int 
+var aux02
+type int 
+type boolean 
+type boolean 
+var elem
+OOOOOOOOOOBJETTOOO%class.Element
+passou
+var elem
+var next
+OOOOOOOOOOBJETTOOO%class.List
+passou
+var next
+var end
+type boolean 
+OOOOOOOOOOBJETTOOOi1
+var end
+type boolean 
+var elem
+var elem
+var next
+var next
+var end
+type boolean 
+var end
+type boolean 
+type boolean 
+type boolean 
+formal v_elem
+formal v_elem
+formal v_next
+formal v_next
+formal v_end
+type boolean 
+formal v_end
+type boolean 
+type boolean 
+type boolean 
+formal new_elem
+formal new_elem
+var ret_val
+type boolean 
+var ret_val
+type boolean 
+var aux03
+var aux03
+var aux02
+var aux02
+formal v_next
+formal v_next
+type boolean 
+type boolean 
+formal e
+formal e
+var my_head
+var my_head
+var ret_val
+type boolean 
+var ret_val
+type boolean 
+var aux05
+type boolean 
+var aux05
+type boolean 
+var aux01
+var aux01
+var prev
+var prev
+var var_end
+type boolean 
+var var_end
+type boolean 
+var var_elem
+var var_elem
+var aux04
+type int 
+var aux04
+type int 
+var nt
+type int 
+var nt
+type int 
+formal e
+formal e
+var int_ret_val
+type int 
+var int_ret_val
+type int 
+var aux01
+var aux01
+var var_elem
+var var_elem
+var var_end
+type boolean 
+var var_end
+type boolean 
+var nt
+type int 
+var nt
+type int 
+type int 
+type int 
+type boolean 
+type boolean 
+var aux01
+var aux01
+var var_end
+type boolean 
+var var_end
+type boolean 
+var var_elem
+var var_elem
+type boolean 
+type boolean 
+var head
+var head
+var last_elem
+var last_elem
+var aux01
+type boolean 
+var aux01
+type boolean 
+var el01
+var el01
+var el02
+var el02
+var el03
+var el03
+type int 
+type int 
+call!
+new! LL
+Objeto:%tmp1
+class Element
+method Init
+Assign
+Assign
+Assign
+methodInit
+boolean true 
+type boolean 
+method GetAge
+methodGetAge
+type int 
+method GetSalary
+methodGetSalary
+type int 
+method GetMarried
+methodGetMarried
+type boolean 
+method Equal
+Assign
+boolean true 
+Assign
+call!
+Objeto:%other.temp
+If
+call!
+Objeto:%tmp19
+Assign
+boolean false 
+Assign
+call!
+Objeto:%other.temp
+If
+call!
+Objeto:%tmp25
+Assign
+boolean false 
+If
+If
+call!
+Objeto:%other.temp
+Assign
+boolean false 
+Assign
+If
+call!
+Objeto:%other.temp
+Assign
+boolean false 
+Assign
+methodEqual
+type boolean 
+method Compare
+Assign
+boolean false 
+Assign
+Plus
+If
+Assign
+boolean false 
+If
+Assign
+boolean false 
+Assign
+boolean true 
+methodCompare
+type boolean 
+class List
+method Init
+Assign
+boolean true 
+methodInit
+boolean true 
+type boolean 
+method InitNew
+Assign
+Assign
+Assign
+methodInitNew
+boolean true 
+type boolean 
+method Insert
+Assign
+Assign
+new! List
+Assign
+call!
+Objeto:%aux02.temp
+boolean false 
+methodInsert
+Identifier
+method SetNext
+Assign
+methodSetNext
+boolean true 
+type boolean 
+method Delete
+Assign
+Assign
+boolean false 
+Assign
+Assign
+Assign
+Assign
+Assign
+While
+If
+call!
+Objeto:%e.temp
+Assign
+boolean true 
+If
+Assign
+call!
+Objeto:%aux01.temp
+Assign
+call!
+Objeto:%prev.temp
+call!
+Objeto:%aux01.temp
+Assign
+If
+Assign
+Assign
+call!
+Objeto:%aux01.temp
+Assign
+call!
+Objeto:%aux01.temp
+Assign
+call!
+Objeto:%aux01.temp
+Assign
+Assign
+methodDelete
+Identifier
+method Search
+Assign
+Assign
+Assign
+Assign
+While
+If
+call!
+Objeto:%e.temp
+Assign
+Assign
+Assign
+call!
+Objeto:%aux01.temp
+Assign
+call!
+Objeto:%aux01.temp
+Assign
+call!
+Objeto:%aux01.temp
+methodSearch
+type int 
+method GetEnd
+methodGetEnd
+type boolean 
+method GetElem
+methodGetElem
+Identifier
+method GetNext
+methodGetNext
+Identifier
+method Print
+Assign
+Assign
+Assign
+While
+call!
+Objeto:%var_elem.temp
+Assign
+call!
+Objeto:%aux01.temp
+Assign
+call!
+Objeto:%aux01.temp
+Assign
+call!
+Objeto:%aux01.temp
+methodPrint
+boolean true 
+type boolean 
+class LL
+method Start
+Assign
+new! List
+Assign
+call!
+Objeto:%last_elem.temp
+Assign
+Assign
+call!
+Objeto:%head.temp
+Assign
+call!
+Objeto:%head.temp
+Assign
+new! Element
+Assign
+call!
+Objeto:%el01.temp
+boolean false 
+Assign
+call!
+Objeto:%head.temp
+Assign
+call!
+Objeto:%head.temp
+Assign
+new! Element
+Assign
+call!
+Objeto:%el01.temp
+boolean true 
+Assign
+Assign
+call!
+Objeto:%head.temp
+Assign
+call!
+Objeto:%head.temp
+Assign
+new! Element
+Assign
+call!
+Objeto:%el01.temp
+boolean false 
+Assign
+call!
+Objeto:%head.temp
+Assign
+call!
+Objeto:%head.temp
+Assign
+new! Element
+Assign
+call!
+Objeto:%el03.temp
+boolean false 
+call!
+Objeto:%head.temp
+call!
+Objeto:%head.temp
+Assign
+new! Element
+Assign
+call!
+Objeto:%el01.temp
+boolean false 
+Assign
+call!
+Objeto:%head.temp
+Assign
+call!
+Objeto:%head.temp
+Assign
+call!
+Objeto:%head.temp
+Assign
+call!
+Objeto:%head.temp
+Assign
+call!
+Objeto:%head.temp
+Assign
+call!
+Objeto:%head.temp
+methodStart
+type int 
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!
+RETURN!

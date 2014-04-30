@@ -1,18 +1,41 @@
-class Factorial{
-    public static void main(String[] a){
-	System.out.println(new Fac().ComputeFac(10));
+class A
+{
+    public static void main(String[] args)
+    {
+    	System.out.println(new C().soma());
     }
 }
+class B
+{
+	int [] x;
+	int y;
+	public int soma(D test)
+	{
+		x = new int [10];
+		x[0]=20;
+		return x[0];
+	}
+}
 
-class Fac {
+class C
+{
+	B x;
+	B h;
+	public int soma() {
+		D teste;
+		x = new B();
+		return x.soma(teste);
+	}
+}
 
-    public int ComputeFac(int num){
-	int num_aux ;
-	if (num < 1)
-	    num_aux = 1 ;
-	else 
-	    num_aux = num * (this.ComputeFac(num-1)) ;
-	return num_aux ;
-    }
-
+class D
+{
+	int a;
+	public int geta() {
+		return a;
+	}
+	public int seta(int b) {
+		a=b;
+		return 0;
+	}
 }

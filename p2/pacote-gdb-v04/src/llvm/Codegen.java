@@ -271,7 +271,7 @@ public class Codegen extends VisitorAdapter{
 	}
 	
 	public LlvmValue visit(IdentifierType n){
-		System.out.println("Identifier");
+		System.out.println("Identifier"+n.name);
 		return new LlvmRegister ( n.name, new LlvmTypeClass(n.name) );
 	}
 	
@@ -428,15 +428,24 @@ public class Codegen extends VisitorAdapter{
 		List<LlvmType> argtys = new LinkedList<LlvmType>();
 		//primeiro argumento é o proprio objeto
 		LlvmValue obj = n.object.accept(this);
+		
+		//busca na symTab o metodo, tipo, etc
+		String cname = obj.type.toString().substring(7,obj.type.toString().indexOf(" "));
+		ClassNode class_meth = symTab.classes.get(cname);
+		MethodNode symtab_meth = class_meth.methMap.get(n.method.s);
 		System.out.println("Objeto:"+obj.toString());
-		args.add(obj);
+		LlvmRegister objl = new LlvmRegister(symtab_meth.formalsList.get(0).type);
+		if(objl.type.toString().equals(obj.type.toString()))
+			args.add(obj);
+		else {
+			assembler.add(new LlvmLoad(objl,obj));
+			args.add(objl);
+		}
 		//demais argumentos
 		for(util.List<Exp> v = n.actuals;v != null;v = v.tail) {
 			args.add(v.head.accept(this));
 		}
-		//busca na symTab o metodo, tipo, etc
-		ClassNode class_meth = symTab.classes.get(obj.type.getName());
-		MethodNode symtab_meth = class_meth.methMap.get(n.method.s);
+		
 		for(LlvmValue v : symtab_meth.formalsList){
 			argtys.add(v.type);
 		}
@@ -510,6 +519,7 @@ public class Codegen extends VisitorAdapter{
 		if(var == null) {
 			var = classEnv.varMap.get(n.s);
 		}
+		System.out.println("T++++++++++++++++++++++++++++++"+var.toString());
 		return new LlvmNamedValue(var.toString(), var.type);
 	}
 }
@@ -602,8 +612,12 @@ class SymTab extends VisitorAdapter{
 		varMap.put(classref.name, classref);
 		//demais argumentos
 		for (util.List<Formal> formalsList = n.formals; formalsList != null; formalsList = formalsList.tail) {
-			argsList.add(formalsList.head.accept(this));
-			varMap.put(formalsList.head.name.s, formalsList.head.accept(this));
+			LlvmValue check = formalsList.head.accept(this);
+			if(check.type.toString().contains("%class.")) {
+				check.type = new LlvmPointer(check.type);
+			}
+			argsList.add(check);
+			varMap.put(formalsList.head.name.s, check);
 		}
 		//agora variaveis locais do metodo
 		for (util.List<VarDecl> declList = n.locals; declList != null; declList = declList.tail) {
