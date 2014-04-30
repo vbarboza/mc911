@@ -276,9 +276,12 @@ public class Codegen extends VisitorAdapter{
 	}
 	
 	public LlvmValue visit(Block n){
-		System.out.println("Block");
-		return null;
+		for (util.List<Statement> s = n.body; s != null; s = s.tail) {
+            s.head.accept(this);
+        }
+        return null;
 	}
+	
 	public LlvmValue visit(If n){
 		System.out.println("If");
 		

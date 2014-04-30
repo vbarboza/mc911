@@ -17,13 +17,16 @@ entry:
   store %class.B * %this, %class.B * * %this.temp
   %x.temp = alloca i32
   %tmp6 = icmp eq i32 1, 2
-br i1 %tmp6, label %then0, label %else1
+   br i1 %tmp6, label %then0, label %else1
 then0:
   store i32 1, i32 * %x.temp
-br label %always2
+  store i32 3, i32 * %x.temp
+  store i32 4, i32 * %x.temp
+   br label %always2
 else1:
   store i32 2, i32 * %x.temp
-br label %always2
+  store i32 3, i32 * %x.temp
+   br label %always2
 always2:
   %tmp7 = load i32 * %x.temp
   ret i32 %tmp7
