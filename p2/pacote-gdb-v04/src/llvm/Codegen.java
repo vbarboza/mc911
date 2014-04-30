@@ -192,6 +192,7 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(MethodDecl n){
 		// Busca metodo na AST
 		methodEnv = classEnv.methMap.get(n.name.s);
+		Vector<String> varnames = new Vector<String>();
 
 		System.out.println("method " + methodEnv.methodName);
 		
@@ -208,10 +209,22 @@ public class Codegen extends VisitorAdapter{
 			assembler.add(new LlvmAlloca(lhs,v.type,new LinkedList<LlvmValue>()));
 			lhs = new LlvmNamedValue(v.toString()+".temp",new LlvmPointer(v.type));
 			assembler.add(new LlvmStore(new LlvmNamedValue(v.toString(),v.type),lhs));
+			varnames.add(v.toString());
 		}
+		
+		//aloca variaveis declaradas
+		for(LlvmValue v:methodEnv.localsList) {
+			//alocas
+			if(varnames.contains(v.toString())) continue;
+			varnames.add(v.toString());
+			LlvmNamedValue lhs = new LlvmNamedValue(v.toString()+".temp",v.type);
+			assembler.add(new LlvmAlloca(lhs,v.type, new LinkedList<LlvmValue>()));
+		}
+		
 		//aloca e torna disponiveis variaveis da classe
 		int i=0;
 		for(LlvmValue v: classEnv.varList){
+			if(varnames.contains(v.toString())) continue;
 			//get element pointer
 			LlvmNamedValue lhs = new LlvmNamedValue(v.toString()+".temp",new LlvmPointer(v.type));
 			LlvmNamedValue src = new LlvmNamedValue("%this",new LlvmPointer(new LlvmTypeClass(classEnv.className)));
@@ -221,17 +234,12 @@ public class Codegen extends VisitorAdapter{
 			assembler.add(new LlvmGetElementPointer(lhs,src, offsets));
 		}
 		
-		//aloca variaveis declaradas
-		for(LlvmValue v:methodEnv.localsList) {
-			//alocas
-			LlvmNamedValue lhs = new LlvmNamedValue(v.toString()+".temp",v.type);
-			assembler.add(new LlvmAlloca(lhs,v.type, new LinkedList<LlvmValue>()));
-		}
 		//statements
 		for(util.List<Statement> s = n.body; s != null; s = s.tail) {
 			s.head.accept(this);
 		}
 		// retorno
+		System.out.println("method"+n.name.toString());
         assembler.add(new LlvmRet(n.returnExp.accept(this)));
         
         //fechar método
@@ -263,8 +271,9 @@ public class Codegen extends VisitorAdapter{
 	
 	public LlvmValue visit(IdentifierType n){
 		System.out.println("Identifier");
-		return null;
+		return new LlvmRegister ( n.name, new LlvmTypeClass(n.name) );
 	}
+	
 	public LlvmValue visit(Block n){
 		System.out.println("Block");
 		return null;
@@ -390,8 +399,9 @@ public class Codegen extends VisitorAdapter{
 	}
 	
 	public LlvmValue visit(This n){
-		System.out.println("This!");
-		return null;
+		LlvmRegister lhs = new LlvmRegister(new LlvmPointer(new LlvmTypeClass(classEnv.className)));
+		assembler.add(new LlvmLoad(lhs,new LlvmNamedValue("%this.temp",new LlvmPointer(lhs.type))));
+		return lhs;
 	}
 	public LlvmValue visit(NewArray n){
 		//alloca
@@ -515,7 +525,12 @@ class SymTab extends VisitorAdapter{
 			varMap.put(declList.head.name.s, declList.head.accept(this));
 		}
 		
-		MethodNode methodEnv = new MethodNode(n.name.s, n.returnType.accept(this).type, argsList, varsList, varMap);
+		
+		LlvmType rettype = n.returnType.accept(this).type;
+		if(rettype.toString().contains("%class.")) {
+			rettype = new LlvmPointer(rettype);
+		}
+		MethodNode methodEnv = new MethodNode(n.name.s, rettype, argsList, varsList, varMap);
 		classEnv.methMap.put(n.name.s, methodEnv);
 		
 		for (util.List<Statement> stmList = n.body; stmList != null; stmList = stmList.tail) {

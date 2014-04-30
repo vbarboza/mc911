@@ -1,18 +1,14 @@
-class A
+// testando this (OK)
+class m
 {
-    public static void main(String[] args)
-    {
-    	System.out.println(new B().soma());
-    }
+   public static void main(String[] args)
+   {
+      System.out.println(new a().i());
+   }
 }
-class B
+
+class a
 {
-	int [] x;
-	int y;
-	public int soma()
-	{
-		x = new int [10];
-		x[0]=10;
-		return x[0];
-	}
+   public a A(){return this;}
+   public int i(){ return 0; }
 }

@@ -6,6 +6,7 @@ public class LlvmRet extends LlvmInstruction{
     }
 
     public String toString(){
+    System.out.println("RETURN!");
 	return "  ret " + v.type + " " + v;
     }
 
