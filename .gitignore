@@ -7,3 +7,4 @@ parser
 .DS_Store
 *.bc
 *.class
+*.opt

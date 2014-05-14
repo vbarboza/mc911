@@ -55,6 +55,10 @@ clean)
 	make clean
 ;;
 
+run)
+	lli ./tests/$2.opt
+;;
+
 *)
 	echo "Erro: Comando não encontrado"
 ;;
