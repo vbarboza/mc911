@@ -1,5 +1,3 @@
-/* Vinicius de Araujo Barboza - 105772 */
-
 #include "llvm/Pass.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/BasicBlock.h"
@@ -7,64 +5,51 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/InstIterator.h"
-#include <queue>
+#include <vector>
+#include <utility>
 
 using namespace llvm;
 
 namespace {
-  struct DeadLoad : public FunctionPass {
-    static char ID;
-    DeadLoad() : FunctionPass(ID) {}
+    struct deadLoad : public FunctionPass {
+        static char ID;
+        deadLoad() : FunctionPass(ID) {}
 
-    virtual bool runOnFunction(Function &func) {
-      bool  ret = false;
-      bool  storeFlag = false;
-      Value *storeValue;
-      Value *storePointer;
-      Value *loadPointer;
-      std::queue<LoadInst *> toRemove;
+        virtual bool runOnFunction(Function &F) {
+            bool changed = false;
 
-      for (inst_iterator i = inst_begin(func),
-           	             e = inst_end(func);
-	                     i != e; i++) {
+            /* Guarda pares (Instruction, Value), em que cada instrução será substituída pelo valor
+             *  e será posteriormente eliminada */
+            std::vector<std::pair<Instruction*,Value*> > instructionsToDelete;
 
-      /* Verifica store anterior */
-        if (storeFlag) {
-
-          /* Verifica instrucao de load */
-	      if (LoadInst* loadInst = dyn_cast<LoadInst>(&*i)) {
-	        loadPointer = loadInst->getPointerOperand();
-
-            /* Compara enderecos de load e store */
-            if (loadPointer == storePointer) {
-	          loadInst->replaceAllUsesWith(storeValue);
-              toRemove.push(loadInst);
+            for (Function::iterator block = F.begin(), e = F.end(); block != e; ++block) {
+                for (BasicBlock::iterator inst = block->begin(), ee = block->end(); inst != ee; ++inst) {
+                    if (isa<StoreInst>(inst)) {
+                        BasicBlock::iterator next = inst;
+                        next++; 
+                        if (isa<LoadInst>(next)) {
+                            Value *stored = inst->getOperand(1);
+                            Value *loaded = next->getOperand(0);
+                            if (stored == loaded) {
+                                std::pair<Instruction*, Value*> p = make_pair (next, inst->getOperand(0));
+                                instructionsToDelete.push_back(p);
+                                changed = true;
+                            }
+                        }
+                    }
+                }
             }
-          storeFlag = false;
-	      }
+
+            for (std::vector<std::pair<Instruction*,Value*> >::iterator it = instructionsToDelete.begin();
+                    it != instructionsToDelete.end(); ++it) {
+                it->first->replaceAllUsesWith(it->second);
+                it->first->eraseFromParent();
+            }
+
+            return changed;
         }
-
-        /* Verifica instrucao de store */
-	    if (StoreInst* storeInst = dyn_cast<StoreInst>(&*i)) {
-	        storeValue   = storeInst->getValueOperand();
-	        storePointer = storeInst->getPointerOperand();
-            storeFlag    = true;
-	    }
-	    else {
-            storeFlag = false;
-	    }
-      }
-
-      /* Remove instrucoes de load */
-      while (!toRemove.empty()) {
-        toRemove.front()->eraseFromParent();
-        toRemove.pop();
-      }
-
-      return ret;
-    }
-  };
+    };
 }
 
-char DeadLoad::ID = 0;
-static RegisterPass<DeadLoad> X("deadLoad", "Dead Load Removal Pass", false, false);
+char deadLoad::ID = 0;
+static RegisterPass<deadLoad> X("deadLoad", "Dead Load Pass", false, false);
