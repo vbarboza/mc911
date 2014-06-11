@@ -3,7 +3,7 @@
 #include "Liveness.H"
 
 using namespace llvm;
-using namespace Analysishelper;
+using namespace Aux;
 
 namespace {
   DenseMap<const Instruction*, int> instMap;
@@ -30,7 +30,6 @@ namespace llvm {
       genKill s;
       for (BasicBlock::iterator i = b->begin(), e = b->end(); i != e; ++i) {
         genKill gki;
-
         // The GEN set is the set of upwards-exposed uses:
         // pseudo-registers that are used in the block before being
         // defined. (Those will be the pseudo-registers that are defined
@@ -63,7 +62,7 @@ namespace llvm {
                                        DenseMap<const BasicBlock*, beforeAfter> &bbBAMap)
   {
     std::queue<BasicBlock*> workList;
-    std::set<BasicBlock *> visited;
+    std::set<BasicBlock *> used;
     Function::iterator fi = F.end();
     fi--;
     workList.push(fi);
@@ -71,10 +70,8 @@ namespace llvm {
     while (!workList.empty()) {
       BasicBlock *b = workList.front();
       workList.pop ();
-
       beforeAfter b_beforeAfter = bbBAMap.lookup(b);
       bool shouldAddPred = !bbBAMap.count(b);
-      errs() << shouldAddPred << "\n";
       genKill b_genKill = bbGKMap.lookup(b);
 
       // Take the union of all successors
@@ -84,29 +81,18 @@ namespace llvm {
       for (succ_iterator SI = succ_begin(b), E = succ_end(b); SI != E; ++SI) {
         std::set<const Instruction*> s(bbBAMap.lookup(*SI).before);
         a.insert(s.begin(), s.end());
-        errs() << "a = \t";
-        std::for_each(a.begin(), a.end(), print_elem); 
-        errs() << "\n";
-        errs() << "s = \t";
-        std::for_each(s.begin(), s.end(), print_elem);
-        errs() << "\n\n";
       }
 
 
-      if (visited.count(b) == 0
-          || a != b_beforeAfter.after){
+      if (used.count(b) == 0 || a != b_beforeAfter.after){
         std::set<const Instruction *>::iterator e;
 
         shouldAddPred = true;
         b_beforeAfter.after = a;
         b_beforeAfter.before.clear();
 
-        // Perform before = after - KILL
-        //We iterate over every element in after and add it to before
-        // iff it is not inside kill.
-        for ( e = b_beforeAfter.after.begin ();
-              e != b_beforeAfter.after.end ();
-              e ++)
+        // before = after - KILL + GEN
+        for ( e = b_beforeAfter.after.begin (); e != b_beforeAfter.after.end (); e ++)
           {
             if (b_genKill.kill.find (*e) == b_genKill.kill.end ())
               b_beforeAfter.before.insert (*e);
@@ -119,72 +105,44 @@ namespace llvm {
         bbBAMap.insert (std::make_pair (b,b_beforeAfter));
       }
 
-      if (visited.insert(b).second == true)
-          errs() << "inserted " << b->getName() << "\n";
+      used.insert(b);
       if (shouldAddPred) {
         for (pred_iterator PI = pred_begin(b), E = pred_end(b); PI != E; ++PI) {
-          //          if (visited.find(*PI) == visited.end()) {
             workList.push(*PI);
         }
       }
     }
-    errs() << "visited size = " << visited.size() << "\n";
   }
 
   void printCode::computeIBeforeAfter(Function &F, DenseMap<const BasicBlock*, beforeAfter> &bbBAMap,
                            DenseMap<const Instruction*, beforeAfter> &iBAMap)
   {
 
-    // for each basic block
-    //    for each instruction (backward)
-    //       after = last before
-    //       before = after - kill + gen
-    //       Insert pair (instruction, beforeAfter) on map
     for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
       BasicBlock::iterator i = --b->end();
       std::set<const Instruction*> liveAfter(bbBAMap.lookup(b).after);
-      std::set<const Instruction*> liveBefore;// (liveAfter);
+      std::set<const Instruction*> liveBefore;
 
-      // Iterate over every instruction on a BB, backward.
       while (true)
         {
-          beforeAfter ba;
           genKill i_genKill = gki_map.lookup (i);
-
           liveBefore.clear ();
-
           // before = after - KILL + GEN
-          //          liveBefore.erase (i);
-
-          // Make after-kill.
-          // The only thing we kill here is ourself.
-         for (std::set<const Instruction*>::iterator e = liveAfter.begin ();
-              e != liveAfter.end ();
-              e ++)
+         for (std::set<const Instruction*>::iterator e = liveAfter.begin (); e != liveAfter.end (); e ++)
            {
              if (i != *e)
                liveBefore.insert (*e);
            }
 
-         // This add GEN
-         // unsigned n = i->getNumOperands();
-         // for (unsigned j = 0; j < n; j++)
-         //   {
-         //     Value *v = i->getOperand(j);
-         //     if (isa<Instruction>(v))
-         //       liveBefore.insert(cast<Instruction>(v));
-         //   }
-
-         // This adds GEN
-         liveBefore.insert (i_genKill.gen.begin (),
+         liveBefore.insert (i_genKill.gen.begin(),
                             i_genKill.gen.end ());
 
-          ba.before = liveBefore;
+          beforeAfter ba;
+	  ba.before = liveBefore;
           ba.after = liveAfter;
           iBAMap.insert(std::make_pair(&*i, ba));
 
           liveAfter = liveBefore;
-
           if (i == b->begin())
             break;
           --i;
@@ -207,68 +165,22 @@ namespace llvm {
     DenseMap<const BasicBlock*, genKill> bbGKMap;
     // For each basic block in the function, compute the block's GEN and KILL sets.
     computeBBGenKill(F, bbGKMap);
-    // for (inst_iterator i = inst_begin(F), E = inst_end(F); i != E; ++i) {
-    //   genKill gki = gki_map.lookup(&*i);
-    //   std::for_each(gki.kill.begin(), gki.kill.end(), print_elem);
-    // }
 
     DenseMap<const BasicBlock*, beforeAfter> bbBAMap;
-    // For each basic block in the function, compute the block's
-    // liveBefore and liveAfter sets.
+    // For each basic block in the function, compute the block's liveBefore and liveAfter sets.
     computeBBBeforeAfter(F, bbGKMap, bbBAMap);
 
     computeIBeforeAfter(F, bbBAMap, iBAMap);
-#ifdef MC911_DEBUG_BB
-    for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b)
-      {
-        beforeAfter s = bbBAMap.lookup(b);
-        genKill gki = bbGKMap.lookup(b);
 
-        errs() << "%" << b << "\n" << *b << "\t:" << ": IN={ ";
-
-        std::for_each(s.before.begin(), s.before.end(), print_elem);
-
-        errs() << "} OUT={ ";
-
-        std::for_each(s.after.begin(), s.after.end(), print_elem);
-
-        errs() << "} GEN(use)={";
-
-        std::for_each(gki.gen.begin(), gki.gen.end(), print_elem);
-
-        errs() << "} KILL(def){";
-
-        std::for_each(gki.kill.begin(), gki.kill.end(), print_elem);
-
-        errs() << "}'\n'";
-      }
-#endif
-
-#ifdef MC911_DEBUG_INST
       for (inst_iterator i = inst_begin(F), E = inst_end(F); i != E; ++i) {
         beforeAfter s = iBAMap.lookup(&*i);
-        genKill gki = gki_map.lookup(&*i);
-
-
-        errs() << "%" << instMap.lookup(&*i) << "\t" << *i << "\t:" << ": { ";
-
+	errs() << "%" << instMap.lookup(&*i) << ": { ";
         std::for_each(s.before.begin(), s.before.end(), print_elem);
-
         errs() << "} { ";
-
         std::for_each(s.after.begin(), s.after.end(), print_elem);
+        errs() << "}\n";
 
-        errs() << "} {";
-
-        std::for_each(gki.gen.begin(), gki.gen.end(), print_elem);
-
-        errs() << "} {";
-
-        std::for_each(gki.kill.begin(), gki.kill.end(), print_elem);
-
-        errs() << "}'\n'";
-      }
-#endif
+     }
      return changed;
   }
 
@@ -298,7 +210,7 @@ namespace llvm {
   RegisterPass<printCode> X("liveVars", "Live vars analysis", false, true);
 }
 
-std::set<const Instruction*> printCode::getLiveOut(Instruction *i) {
-  return iBAMap.lookup (i).after;
+std::set<const Instruction*> printCode::iLivenessInfo(Instruction *i) {
+  return iBAMap.lookup(i).after;
 }
 
