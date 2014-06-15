@@ -1,3 +1,9 @@
+/* Vinicius de Araujo Barboza - 105772 */
+/* Joao Gabriel M. D. Mendes - 102788  */
+/* Projeto 3 - MC911 - 1s2014          */
+/* Unicamp - IC                        */
+
+
 #include "llvm/Pass.h"
 #include "llvm/IR/Function.h"
 #include "llvm/Support/raw_ostream.h"
@@ -7,17 +13,17 @@
 #include <set>
 #include <iostream>
 #include <string>
-#include "Liveness.H"
+#include "Liveness.h"
 
 using namespace llvm;
 using namespace std;
 
 namespace {
-    class dce : public FunctionPass {
+    class dcep3 : public FunctionPass {
     private:
         bool deadcode (printCode &PC, Instruction &i) {
 
-            std::set<const Instruction*> livenessinfo = PC.iLivenessInfo(&i);
+            std::set<const Instruction*> livenessinfo = PC.iBAMap.lookup(&i).after;
 
             if ( i.mayHaveSideEffects() || i.isTerminator() || isa<DbgInfoIntrinsic>(i) || isa<LandingPadInst>(i)
                 || (livenessinfo.find(&i) != livenessinfo.end()))
@@ -29,7 +35,7 @@ namespace {
     public:
         static char ID;
 
-        dce() : FunctionPass(ID) { }
+        dcep3() : FunctionPass(ID) { }
 
         virtual bool runOnFunction(Function &f) {
             bool ret = false;
@@ -43,19 +49,17 @@ namespace {
 		pass = false;
                 printCode &PC = getAnalysis<printCode>();		
             	for (inst_iterator ins = inst_begin(f); ins != inst_end(f);){
-                	Instruction &aux = *ins++;
-
+			Instruction &aux = *ins;
+			*ins++;
+			
                 	if (deadcode(PC, aux)) {
-                     	errs() << "Instrucao Removida! : " << aux << "\n";
-
-                    	aux.eraseFromParent();
-                    	ret = true;
-                        pass = true;
+                     	//errs() << "Instrucao Removida! : " << aux << "\n";
+                    		aux.eraseFromParent();
+                    		ret = true;
+                        	pass = true;
                 	}
             	}
-		errs() << "fim do Loop!\n";
 	    	if(pass == false) break;
-		errs() << "de novo!\n";
 	    }
             return ret;
         }
@@ -66,6 +70,6 @@ namespace {
     };
 
 
-   char dce::ID = 0;
-   static RegisterPass<dce> X("dcep3", "DCE-P3 pass", false, false);
+   char dcep3::ID = 0;
+   static RegisterPass<dcep3> X("dcep3", "DCE-P3 pass", false, false);
 }

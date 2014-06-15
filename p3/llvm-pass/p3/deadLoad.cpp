@@ -1,4 +1,7 @@
 /* Vinicius de Araujo Barboza - 105772 */
+/* Joao Gabriel M. D. Mendes - 102788  */
+/* Projeto 3 - MC911 - 1s2014          */
+/* Unicamp - IC                        */
 
 #include "llvm/Pass.h"
 #include "llvm/IR/Function.h"
@@ -57,7 +60,8 @@ namespace {
 
       /* Remove instrucoes de load */
       while (!toRemove.empty()) {
-        toRemove.front()->eraseFromParent();
+        //errs() << "DeadLoad! : " << *(toRemove.front()) << "\n";
+	toRemove.front()->eraseFromParent();
         toRemove.pop();
       }
 
